@@ -1,2 +1,2 @@
 # smart-connectors-integration-tests
-bundle with smart connectors and apps using them.
+Bundle with several Smart Connectors and Mule Apps using them.

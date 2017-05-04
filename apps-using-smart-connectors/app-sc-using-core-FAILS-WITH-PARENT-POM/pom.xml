@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.mule.extensions.smart</groupId>
+		<artifactId>apps-using-smart-connectors-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>app-sc-using-core-FAILS-WITH-PARENT-POM</artifactId>
+	<packaging>mule-application</packaging>
+
+	<name>Mule App: depends SC using core components</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<app.runtime>4.0.0-SNAPSHOT</app.runtime>
+		<mule.runtime>4.0.0-SNAPSHOT</mule.runtime>
+		<mule.tools.version>3.0.0-SNAPSHOT</mule.tools.version>
+		<mule.maven.plugin.version>3.0.0-SNAPSHOT</mule.maven.plugin.version>
+		<munit.runtime.version>2.0.0-SNAPSHOT</munit.runtime.version>
+		<munit.maven.plugin.version>2.0.0-SNAPSHOT</munit.maven.plugin.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.mule.tools.maven</groupId>
+				<artifactId>mule-maven-plugin</artifactId>
+				<version>${mule.maven.plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration></configuration>
+			</plugin>
+
+
+
+			<!-- MUnit plugin-->
+			<plugin>
+				<groupId>com.mulesoft.munit.tools</groupId>
+				<artifactId>munit-maven-plugin</artifactId>
+				<version>${munit.maven.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<randomFailMessages>true</randomFailMessages>
+					<dynamicPorts>
+						<dynamicPort>a.dynamic.port</dynamicPort>
+						<dynamicPort>mock.inbounds.test.port</dynamicPort>
+					</dynamicPorts>
+					<environmentVariables>
+						<MY_ENV>envVar</MY_ENV>
+					</environmentVariables>
+					<!--<argLines>-->
+						<!--&lt;!&ndash;to debug the runtime through MUnit&ndash;&gt;-->
+						<!--<debugger.argline>-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=y</debugger.argline>-->
+						<!--<argLine>-Djava.library.path=lib/</argLine>-->
+						<!--<argLine>-Xmx8192m</argLine>-->
+						<!--<argLine>-XX:-UseGCOverheadLimit</argLine>-->
+					<!--</argLines>-->
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<!-- Mule Dependencies -->
+	<dependencies>
+		<dependency>
+			<groupId>org.mule.extensions.smart</groupId>
+			<artifactId>smart-connector-using-core</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>compile</scope>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-http-ext</artifactId>
+			<version>${mule.runtime}</version>
+			<classifier>mule-plugin</classifier>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Mule Modules -->
+		<dependency>
+			<groupId>com.mulesoft.munit</groupId>
+			<artifactId>munit-runtime</artifactId>
+			<version>${munit.runtime.version}</version>
+			<scope>test</scope>
+			<type>pom</type>
+		</dependency>
+	</dependencies>
+
+</project>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+
+    <parent>
+        <groupId>org.mule.extensions.smart</groupId>
+        <artifactId>smart-connectors-integration-tests</artifactId>
+        <version>1.0.0-SNAPSHOT</version>        
+    </parent>
+
+    <artifactId>smart-connectors-parent</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Parent POM of Smart Connectors</name>
+    <description>Parent pom of a set of Smart Connectors</description>
+ 
+    <properties>
+        <mule.extensions.maven.plugin.version>1.0.0-SNAPSHOT</mule.extensions.maven.plugin.version>
+    </properties>
+
+    <modules>
+        <module>smart-connector-using-core</module>
+        <module>smart-connector-using-file</module>
+        <module>smart-connector-using-http</module>
+        <module>smart-connector-using-smart-connector</module>
+    </modules>
+
+    <dependencies>
+
+        <!-- BEGIN DEPENDENCIES FOR JAVA_AND_SMART_CONNECTORS -->
+        <dependency>
+            <!-- TODO MULE-11615 until the dependencies problems don't get fixed, I need to add all PROVIDED dependencies from third party connectors -->
+            <!-- TODO MULE-12378 Ideally, I should inject the following dependency from the mule-extension-maven-plugin-->
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-runtime-impl-bom</artifactId>
+            <version>${mule.version}</version>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!-- TODO MULE-12378 Ideally, I should inject the following dependency from the mule-extension-maven-plugin-->
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-extensions-xml-support</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- END DEPENDENCIES FOR JAVA_AND_SMART_CONNECTORS -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <!-- BUILD PLUGIN FOR JAVA_AND_SMART_CONNECTORS -->
+                <groupId>org.mule.runtime.plugins</groupId>
+                <artifactId>mule-extensions-maven-plugin</artifactId>
+                <version>${mule.extensions.maven.plugin.version}</version>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
