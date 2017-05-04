@@ -24,6 +24,7 @@
         <module>smart-connector-using-core</module>
         <module>smart-connector-using-file</module>
         <module>smart-connector-using-http</module>
+        <module>smart-connector-using-custom-types</module>
         <module>smart-connector-using-smart-connector</module>
     </modules>
 
