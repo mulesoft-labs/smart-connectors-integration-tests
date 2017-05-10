@@ -15,7 +15,7 @@
         <body>
             <mule:set-payload value="Wubba Lubba Dub Dub"/>
         </body>
-        <output type="get-issues-return-type" doc:description="Payload's output"/>
+        <output type="a-custom-type" doc:description="Payload's output"/>
     </operation>
 
  </module>

@@ -4,7 +4,7 @@
             xmlns:types="http://www.mulesoft.org/schema/mule/types">
 
     <types:catalog>
-        <types:type name="get-issues-return-type" location="./get-issues-return-schema.json"/>
+        <types:type name="a-custom-type" location="./a-custom-type-schema.json"/>
     </types:catalog>
 
 </types:mule>
