@@ -18,4 +18,12 @@
         <output type="string" doc:description="Payload's output"/>
     </operation>
 
+    <operation name="set-payload-hardcoded-two-times" doc:description="Sets the payload to the String value 'Wubba Lubba Dub Dub'">
+        <body>
+            <mule:set-payload value="Wubba Lubba Dub Dub"/>
+            <mule:set-payload value="#[payload ++ 'Dub Dub']"/>
+        </body>
+        <output type="string" doc:description="Payload's output"/>
+    </operation>
+
  </module>
