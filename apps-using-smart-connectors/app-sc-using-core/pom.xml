@@ -9,7 +9,7 @@
 		<!--<version>1.0.0-SNAPSHOT</version>-->
 	<!--</parent>-->
 
-	<!--TODO until it gets fixed the issue with parent poms and effective models, this must be here. (and all the dependencies and plugins as well) -->
+	<!--TODO until it gets fixed the issue with parent poms and effective models, this must be here. (and all the dependencies and plugins as well) https://www.mulesoft.org/jira/browse/MU-1048 -->
 	<groupId>org.mule.extensions.smart</groupId>
 	<version>1.0.0-SNAPSHOT</version>
 
