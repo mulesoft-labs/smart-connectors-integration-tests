@@ -27,6 +27,7 @@
         <module>smart-connector-using-custom-types</module>
         <module>smart-connector-using-dw</module>
         <module>smart-connector-using-smart-connector</module>
+        <module>smart-connector-using-validation</module>
     </modules>
 
     <dependencies>

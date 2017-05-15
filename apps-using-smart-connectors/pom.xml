@@ -18,7 +18,10 @@
 
     <modules>
         <module>app-sc-using-core</module>
-        <module>app-sc-using-core-FAILS-WITH-PARENT-POM</module>
+        <module>app-sc-using-validation</module>
+        <!--
+        TODO Commented out until the deployment works properly
+        <module>app-sc-using-core-FAILS-WITH-PARENT-POM</module>-->
     </modules>
     
 </project>

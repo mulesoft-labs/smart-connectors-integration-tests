@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-validation"
+        minMuleVersion="4.0.0"
+
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+
+    <operation name="is-really-email">
+        <parameters>
+            <parameter name="inputEmail" type="string"/>
+        </parameters>
+        <body>
+            <validation:is-email email="#[parameters.inputEmail]"/>
+        </body>
+        <output type="boolean"/>
+    </operation>
+
+ </module>

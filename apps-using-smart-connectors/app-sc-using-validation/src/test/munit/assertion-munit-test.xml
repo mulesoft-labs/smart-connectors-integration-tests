@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munitext="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns:module-using-validation="http://www.mulesoft.org/schema/mule/module-using-validation"
+      xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core      http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/munit     http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+        http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/module-using-validation http://www.mulesoft.org/schema/mule/module-using-validation/current/module-using-validation.xsd">
+
+    <munit:config/>
+
+    <munit:test name="testUsingSmartOperation" description="">
+        <flow-ref name="assertion-using-smart-connector-flow-success" />
+        <munitext:assert-that expression="#[payload]" is="#[equalTo('Wubba Lubba Dub Dub')]" message="Oops this should have been true"/>
+    </munit:test>
+
+    <!-- TODO add jira here
+    <munit:test name="testUsingSmartOperationFailure" description="" expectedException="org.mule.extension.validation.api.Validation">-->
+    <munit:test name="testUsingSmartOperationFailure" description="" expectedErrorType="ANY">
+        <flow-ref name="assertion-using-smart-connector-flow-failure" />
+        <!--<munitext:assert-that expression="#[payload]" is="#[equalTo('Wubba Lubba Dub Dub')]" message="Oops this should have been true"/>-->
+    </munit:test>
+
+    <flow name="assertion-using-smart-connector-flow-success">
+        <module-using-validation:is-really-email inputEmail="juan.fernandez@mulesoft.com"/>
+        <mule:set-payload value="Wubba Lubba Dub Dub" />
+    </flow>
+
+    <flow name="assertion-using-smart-connector-flow-failure">
+        <module-using-validation:is-really-email inputEmail="juan.fernandezmulesoft.com"/>
+
+    </flow>
+</mule>
