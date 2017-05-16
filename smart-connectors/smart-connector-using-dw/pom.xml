@@ -16,6 +16,7 @@
     <description>A Mule extension done with pure Mule DSL that depends JUST in the DW MP ('ee:transform')</description>
 
     <dependencies>
+        <!-- TODO needed due to MULE-12475 and MULE-12440-->
         <dependency>
             <groupId>com.mulesoft.mule.runtime.modules</groupId>
             <artifactId>mule-module-spring-config-ee</artifactId>

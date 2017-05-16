@@ -15,11 +15,15 @@
     <name>Smart Connector: using File Connector</name>
     <description>A Mule extension done with pure Mule DSL that depends on the File Connector (file:config, file:list, etc. )</description>
 
+    <properties>
+        <mule.module.file.version>1.0.0-SNAPSHOT</mule.module.file.version>
+    </properties>
+
     <dependencies>
         <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-module-file</artifactId>
-            <version>${mule.version}</version>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-file-connector</artifactId>
+            <version>${mule.module.file.version}</version>
             <classifier>mule-plugin</classifier>
             <scope>compile</scope>
         </dependency>

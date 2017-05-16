@@ -15,11 +15,15 @@
     <name>Smart Connector: using HTTP Connector</name>
     <description>A Mule extension done with pure Mule DSL that depends on the HTTP Connector (http:requester-config, http:requester, etc. )</description>
 
+    <properties>
+        <mule.module.http.version>1.0.0-SNAPSHOT</mule.module.http.version>
+    </properties>
+    
     <dependencies>
         <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-module-http-ext</artifactId>
-            <version>${mule.version}</version>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-http-connector</artifactId>
+            <version>${mule.module.http.version}</version>
             <classifier>mule-plugin</classifier>
             <scope>compile</scope>
         </dependency>
