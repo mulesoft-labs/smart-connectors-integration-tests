@@ -9,10 +9,10 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>                                                              
 
-    <artifactId>smart-connector-using-custom-types</artifactId>
+    <artifactId>smart-connector-using-custom-types-json</artifactId>
     <packaging>mule-extension</packaging>
 
-    <name>Smart Connector: using custom types</name>
+    <name>Smart Connector: using custom types with JSON</name>
     <description>A Mule extension done with pure Mule DSL that depends on JSON schemas to define input and outputs</description>
 
 </project>
