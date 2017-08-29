@@ -3,7 +3,6 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-
     <parent>
         <groupId>org.mule.extensions.smart</groupId>
         <artifactId>smart-connectors-integration-tests</artifactId>
@@ -32,16 +31,12 @@
     </modules>
 
     <dependencies>
-
-        <!-- BEGIN DEPENDENCIES FOR JAVA_AND_SMART_CONNECTORS -->
         <dependency>
-            <!-- TODO MULE-12378 Ideally, I should inject the following dependency from the mule-extension-maven-plugin-->
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-extensions-xml-support</artifactId>
             <version>${mule.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- END DEPENDENCIES FOR JAVA_AND_SMART_CONNECTORS -->
     </dependencies>
 
     <build>
