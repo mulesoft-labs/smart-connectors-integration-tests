@@ -16,7 +16,6 @@
         <body>
             <validation:is-email email="#[parameters.inputEmail]"/>
         </body>
-        <output type="boolean"/>
     </operation>
 
  </module>

@@ -16,12 +16,76 @@
     <name>Parent POM of Smart Connectors</name>
     <description>Parent pom of a set of Mule Apps using Smart Connectors</description>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        
+        <mule.maven.plugin.version>3.0.0-SNAPSHOT</mule.maven.plugin.version>
+        <munit.runtime.version>2.0.0-SNAPSHOT</munit.runtime.version>
+        <munit.maven.plugin.version>2.0.0-SNAPSHOT</munit.maven.plugin.version>
+    </properties>
+
     <modules>
         <module>app-sc-using-core</module>
         <module>app-sc-using-validation</module>
-        <!--
-        TODO Commented out until the deployment works properly
-        <module>app-sc-using-core-FAILS-WITH-PARENT-POM</module>-->
     </modules>
+    
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.mule.tools.maven</groupId>
+                    <artifactId>mule-maven-plugin</artifactId>
+                    <version>${mule.maven.plugin.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
+
+                <!-- MUnit plugin-->
+                <plugin>
+                    <groupId>com.mulesoft.munit.tools</groupId>
+                    <artifactId>munit-maven-plugin</artifactId>
+                    <version>${munit.maven.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>test</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <randomFailMessages>true</randomFailMessages>
+                        <dynamicPorts>
+                            <dynamicPort>a.dynamic.port</dynamicPort>
+                            <dynamicPort>mock.inbounds.test.port</dynamicPort>
+                        </dynamicPorts>
+                        <environmentVariables>
+                            <MY_ENV>envVar</MY_ENV>
+                        </environmentVariables>
+                        <!--<argLines>-->
+                            <!--&lt;!&ndash; To debug the runtime through MUnit &ndash;&gt;-->
+                            <!--<debugger.argline>-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=y</debugger.argline>-->
+                            <!--<argLine>-Djava.library.path=lib/</argLine>-->
+                            <!--<argLine>-Xmx8192m</argLine>-->
+                            <!--<argLine>-XX:-UseGCOverheadLimit</argLine>-->
+                        <!--</argLines>-->
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <!-- Mule Dependencies -->
+    <dependencies>
+        <!-- Mule Modules -->
+        <dependency>
+            <groupId>com.mulesoft.munit</groupId>
+            <artifactId>munit-runtime</artifactId>
+            <version>${munit.runtime.version}</version>
+            <scope>test</scope>
+            <type>pom</type>
+        </dependency>
+    </dependencies>
     
 </project>

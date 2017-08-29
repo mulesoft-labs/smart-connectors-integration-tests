@@ -6,10 +6,12 @@
         xmlns="http://www.mulesoft.org/schema/mule/module"
         xmlns:mule="http://www.mulesoft.org/schema/mule/core"
         xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+        xmlns:tns="http://www.mulesoft.org/schema/mule/module-using-core"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="
            http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
-           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+           http://www.mulesoft.org/schema/mule/module-using-core http://www.mulesoft.org/schema/mule/module-using-core/current/mule-module-using-core.xsd">
 
     <operation name="set-payload-hardcoded" doc:description="Sets the payload to the String value 'Wubba Lubba Dub Dub'">
         <body>
@@ -18,10 +20,10 @@
         <output type="string" doc:description="Payload's output"/>
     </operation>
 
-    <operation name="set-payload-hardcoded-two-times" doc:description="Sets the payload to the String value 'Wubba Lubba Dub Dub'">
+    <operation name="set-payload-hardcoded-two-times" doc:description="Sets the payload to the String value 'Wubba Lubba Dub Dub Dub Dub' (uses references to local operation)">
         <body>
-            <mule:set-payload value="Wubba Lubba Dub Dub"/>
-            <mule:set-payload value="#[payload ++ 'Dub Dub']"/>
+            <tns:set-payload-hardcoded/>
+            <mule:set-payload value="#[payload ++ ' Dub Dub']"/>
         </body>
         <output type="string" doc:description="Payload's output"/>
     </operation>
