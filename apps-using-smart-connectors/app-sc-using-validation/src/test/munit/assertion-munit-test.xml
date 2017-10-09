@@ -9,8 +9,8 @@
         http://www.mulesoft.org/schema/mule/munit     http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
         http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
 
-    <munit:config/>
-    <import file="mule-config.xml"/>
+    <munit:config name="assertion-test.xml"/>
+    <!--<import file="mule-config.xml"/>-->
 
     <munit:test name="test-is-really-email-success-flow" description="">
         <munit:execution>
@@ -18,7 +18,7 @@
             <flow-ref name="is-really-email-success-flow" />
         </munit:execution>
         <munit:validation>
-            <munitext:assert-that expression="#[payload]" is="#[equalTo('payload before validating email through smart connector')]" message="Oops this should have been true"/>
+            <munitext:assert-that expression="#[payload]" is="#[MunitTools::equalTo('payload before validating email through smart connector')]" message="Oops this should have been true"/>
         </munit:validation>
     </munit:test>
 

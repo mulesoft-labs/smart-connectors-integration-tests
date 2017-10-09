@@ -18,7 +18,7 @@
             <parameter name="value2" type="XsdType3"/>
         </parameters>
         <body>
-            <mule:set-payload value="#[parameters.value]"/>
+            <mule:set-payload value="#[vars.value]"/>
         </body>
         <output type="XsdType2"/>
     </operation>

@@ -14,7 +14,7 @@
             <parameter name="inputEmail" type="string"/>
         </parameters>
         <body>
-            <validation:is-email email="#[parameters.inputEmail]"/>
+            <validation:is-email email="#[vars.inputEmail]"/>
         </body>
     </operation>
 
