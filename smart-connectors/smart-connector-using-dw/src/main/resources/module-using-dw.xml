@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module name="module-using-dw"
-        minMuleVersion="4.0.0"
         doc:description="This module relies entirely in runtime provided components (no other Plugin dependencies) and DW"
 
         xmlns="http://www.mulesoft.org/schema/mule/module"
@@ -13,20 +12,23 @@
            http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
            http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 
-    <operation name="set-payload-through-dw" doc:description="Sets the payload to the String value 'Wubba Lubba Dub Dub'">
+    <operation name="set-payload-through-dw" doc:description="Sets the payload to the structure of PersonJsonType">
         <body>
             <ee:transform>
                 <ee:message>
                     <ee:set-payload><![CDATA[
-                        %dw 2.0
-                        %output application/json encoding='UTF-8'
-                        ---
-                        'Wubba Lubba Dub Dub'
-                ]]></ee:set-payload>
+                    %dw 2.0
+                    %output application/json encoding='UTF-8'
+                    ---
+                    {
+                        "name" : "Rick"
+                        "lastname" : "Sanchez"
+                    }
+                    ]]></ee:set-payload>
                 </ee:message>
             </ee:transform>
         </body>
-        <output type="string" doc:description="Payload's output"/>
+        <output type="PersonJsonType" doc:description="Payload's output"/>
     </operation>
 
  </module>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module name="module-using-http"
-        minMuleVersion="4.0.0"
 
         xmlns="http://www.mulesoft.org/schema/mule/module"
         xmlns:mule="http://www.mulesoft.org/schema/mule/core"
@@ -18,7 +17,7 @@
     <httpn:request-config name="github-httpreq-config" basePath="/">
         <httpn:request-connection host="api.github.com" protocol="HTTPS" port="443">
             <httpn:authentication>
-                <httpn:basic-authentication username="#[mel:property.username]" password="#[mel:property.password]"/>
+                <httpn:basic-authentication username="#[vars.username]" password="#[vars.password]"/>
             </httpn:authentication>
         </httpn:request-connection>
     </httpn:request-config>
@@ -29,10 +28,10 @@
             <parameter name="since" type="string" defaultValue="2017-02-06T09:29:49Z" doc:description="date from which restoring issues, sample: 2016-07-31T12:37:07Z"/>
         </parameters>
         <body>
-            <mule:logger level="ERROR" doc:name="Logger" message="#[mel: 'repo:[' + param.repo + '], since:[' + param.since +']']" />
+            <mule:logger level="ERROR" doc:name="Logger" message="#[mel: 'repo:[' + vars.repo + '], since:[' + vars.since +']']" />
             <httpn:request config-ref="github-httpreq-config" path="search/issues" method="GET" >
                 <httpn:query-params>
-                    #[mel:['q' : 'repo:' + param.repo + ' created:>=' + param.since, 'type': 'Issues']]
+                    #[{'q' : 'repo:' ++ vars.repo ++ ' created:>=' ++ vars.since, 'type' : 'Issues'}]
                 </httpn:query-params>
             </httpn:request>
             <mule:set-payload value="#[payload]" mimeType="application/json" />
