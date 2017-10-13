@@ -1,21 +1,16 @@
 {
   "name": "mule-app",
   "minMuleVersion": "4.0.0-SNAPSHOT",
-  "requiredProduct" : "MULE_EE",
+  "requiredProduct": "MULE_EE",
   "classLoaderModelLoaderDescriptor": {
     "id": "mule",
-    "attributes": {
-      "exportedPackages": [],
-      "exportedResources": [],
-      "includeTestDependencies" : "true"
-    }
+    "attributes": {}
   },
   "bundleDescriptorLoader": {
     "id": "mule",
     "attributes": {}
   },
   "configs": [
-    "mule-config.xml",
-    "assertion-munit-test.xml"
+    "mule-config.xml"
   ]
 }
