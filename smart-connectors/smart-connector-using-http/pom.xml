@@ -25,7 +25,6 @@
             <artifactId>mule-http-connector</artifactId>
             <version>${mule.module.http.version}</version>
             <classifier>mule-plugin</classifier>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

@@ -12,14 +12,14 @@
 
     <operation name="operation-with-custom-types">
         <parameters>
-            <parameter name="value" type="XsdType1"/>
+            <parameter name="value" type="XsdType1::Root"/>
             <!--extra parameter without targetNamespace in the schema under XsdType3-->
-            <parameter name="value2" type="XsdType3"/>
+            <parameter name="value2" type="XsdType3::{http://validationnamespace.raml.org}objectName"/>
         </parameters>
         <body>
             <mule:set-payload value="#[vars.value]"/>
         </body>
-        <output type="XsdType2"/>
+        <output type="XsdType2::{http://uri}Root0"/>
     </operation>
 
  </module>

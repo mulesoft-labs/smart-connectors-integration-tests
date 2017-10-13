@@ -21,7 +21,6 @@
             <artifactId>smart-connector-using-core</artifactId>
             <version>${project.version}</version>
             <classifier>mule-plugin</classifier>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
