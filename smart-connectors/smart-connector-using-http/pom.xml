@@ -16,7 +16,7 @@
     <description>A Mule extension done with pure Mule DSL that depends on the HTTP Connector (http:requester-config, http:requester, etc. )</description>
 
     <properties>
-        <mule.module.http.version>1.0.0-SNAPSHOT</mule.module.http.version>
+        <mule.module.http.version>1.0.0</mule.module.http.version>
     </properties>
     
     <dependencies>

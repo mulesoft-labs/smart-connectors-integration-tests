@@ -16,7 +16,7 @@
     <description>A Mule extension done with pure Mule DSL that depends on the Validation Connector (validation:is-email, validation:is-url, etc. )</description>
 
     <properties>
-        <mule.module.validation.version>1.0.0-SNAPSHOT</mule.module.validation.version>
+        <mule.module.validation.version>1.0.0</mule.module.validation.version>
     </properties>
     
     <dependencies>

@@ -16,7 +16,7 @@
     <description>Parent pom of a set of Smart Connectors</description>
  
     <properties>
-        <mule.extensions.maven.plugin.version>1.0.0-SNAPSHOT</mule.extensions.maven.plugin.version>
+        <mule.extensions.maven.plugin.version>1.0.0</mule.extensions.maven.plugin.version>
     </properties>
 
     <modules>

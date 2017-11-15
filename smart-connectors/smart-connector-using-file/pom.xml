@@ -16,7 +16,7 @@
     <description>A Mule extension done with pure Mule DSL that depends on the File Connector (file:config, file:list, etc. )</description>
 
     <properties>
-        <mule.module.file.version>1.0.0-SNAPSHOT</mule.module.file.version>
+        <mule.module.file.version>1.0.0</mule.module.file.version>
     </properties>
 
     <dependencies>

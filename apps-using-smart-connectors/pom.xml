@@ -20,9 +20,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         
-        <mule.maven.plugin.version>3.0.0-SNAPSHOT</mule.maven.plugin.version>
-        <munit.runtime.version>2.0.0-SNAPSHOT</munit.runtime.version>
-        <munit.maven.plugin.version>2.0.0-SNAPSHOT</munit.maven.plugin.version>
+        <mule.maven.plugin.version>3.0.0</mule.maven.plugin.version>
+        <munit.runtime.version>2.0.0</munit.runtime.version>
+        <munit.maven.plugin.version>2.0.0</munit.maven.plugin.version>
     </properties>
 
     <modules>
