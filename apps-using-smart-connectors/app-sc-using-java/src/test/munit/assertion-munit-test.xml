@@ -31,5 +31,24 @@
         </munit:validation>
     </munit:test>
 
+    <munit:test name="test-invoke-with-args-flow" description="">
+        <munit:execution>
+            <flow-ref name="static-invoke-flow" />
+            <set-variable variableName="instance" value="#[payload]"/>
+            <set-variable variableName="args" value="#[{'arg0':'Lautaro'}]"/>
+            <flow-ref name="invoke-with-args-flow" />
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Hi Lautaro')]" message="Oops this should have been true"/>
+        </munit:validation>
+    </munit:test>
 
+    <munit:test name="test-new-flow" description="">
+        <munit:execution>
+            <flow-ref name="new-flow" />
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[payload.^class]" is="#[MunitTools::equalTo('org.mule.daPackage.ExecutableElement')]" message="Oops this should have been true"/>
+        </munit:validation>
+    </munit:test>
 </mule>

@@ -37,14 +37,10 @@
         <output type="any"/>
     </operation>
 
-    <!--<operation name="new-method">-->
-        <!--<parameters>-->
-            <!--<parameter name="class" type="string"/>-->
-            <!--<parameter name="constructor" type="string"/>-->
-        <!--</parameters>-->
-        <!--<body>-->
-            <!--<java:new class="#[vars.class]" constructor="#[vars.constructor]" />-->
-        <!--</body>-->
-        <!--<output type="any"/>-->
-    <!--</operation>-->
+   <operation name="new-method">
+        <body>
+            <java:new class="org.mule.daPackage.ExecutableElement" constructor="ExecutableElement()" />
+        </body>
+        <output type="any"/>
+    </operation>
 </module>

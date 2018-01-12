@@ -12,6 +12,12 @@
 	<flow name="invoke-flow">
 		<module-using-java:invoke-method instance="#[vars.instance]"/>
 	</flow>
-	
 
+	<flow name="invoke-with-args-flow">
+		<module-using-java:invoke-method-with-args instance="#[vars.instance]" args="#[vars.args]"/>
+	</flow>
+
+	<flow name="new-flow">
+		<module-using-java:new-method/>
+	</flow>
 </mule>
