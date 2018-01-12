@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalogs xmlns="http://www.mulesoft.org/schema/mule/types" >
+
+    <catalog name="java" format="application/java">
+        <schema format="application/classloader"/>
+    </catalog>
+
+</catalogs>

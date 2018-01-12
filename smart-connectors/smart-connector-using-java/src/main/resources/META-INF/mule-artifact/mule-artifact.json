@@ -1,0 +1,25 @@
+{
+  "extensionModelLoaderDescriptor": {
+    "id": "xml-based",
+    "attributes": {
+      "validate-xml": true,
+      "resource-xml": "module-using-java.xml"
+    }
+  },
+  "name": "module-using-java",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "privilegedExportedPackages": [],
+      "privilegedArtifactIds": [],
+      "exportedPackages": [
+        "org.mule.daPackage"
+      ],
+      "exportedResources": []
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}
