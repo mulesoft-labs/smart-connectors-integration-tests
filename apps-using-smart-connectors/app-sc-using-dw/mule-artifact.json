@@ -1,0 +1,16 @@
+{
+  "name": "mule-app",
+  "minMuleVersion": "4.1.0",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "configs": [
+    "mule-config.xml"
+  ]
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+	  xmlns:module-using-dw="http://www.mulesoft.org/schema/mule/module-using-dw"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/module-using-dw http://www.mulesoft.org/schema/mule/module-using-dw/current/mule-module-using-dw.xsd">
+
+	<flow name="set-payload-through-dw-flow">
+		<module-using-dw:set-payload-through-dw/>
+	</flow>
+
+	<flow name="set-payload-through-dw-fun-flow">
+		<module-using-dw:set-payload-through-dw-fun/>
+	</flow>
+
+	<flow name="set-payload-through-dw-fun-with-string-type-flow">
+		<module-using-dw:set-payload-through-dw-fun-with-string-type name="lautaro"/>
+	</flow>
+
+    <flow name="set-payload-through-dw-fun-with-person-type-flow">
+		<module-using-dw:set-payload-through-dw-fun-with-person-type person="#[ {'name' : 'Rick', 'lastname' : 'Sanchez'} ]"/>
+	</flow>
+
+    <flow name="set-payload-through-dw-fun-with-persons-type-flow">
+		<module-using-dw:set-payload-through-dw-fun-with-persons-type persons="#[ [{ 'name' : 'Rick', 'lastname' : 'Sanchez' } , { 'name' : 'Lautaro', 'lastname' : 'Fernandez' } ]]"/>
+	</flow>
+
+    <flow name="set-payload-invoking-directly-dw-fun-flow">
+        <!-- showing that the application also has access to the DW functions located in the dw/modules/weirdFolder/dwModule.dwl
+        file defined in the module's code-->
+        <set-payload value="#[dw::modules::weirdFolder::dwModule::five()]"/>
+    </flow>
+</mule>

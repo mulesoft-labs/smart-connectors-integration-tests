@@ -3,13 +3,11 @@
         doc:description="This module relies entirely in runtime provided components (no other Plugin dependencies) and DW"
 
         xmlns="http://www.mulesoft.org/schema/mule/module"
-        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
         xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
         xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="
            http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
-           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
            http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 
     <operation name="set-payload-through-dw" doc:description="Sets the payload to the structure of PersonJsonType">
@@ -18,17 +16,92 @@
                 <ee:message>
                     <ee:set-payload><![CDATA[
                     %dw 2.0
-                    %output application/json encoding='UTF-8'
+                    output application/json encoding='UTF-8'
                     ---
                     {
-                        "name" : "Rick"
-                        "lastname" : "Sanchez"
+                        'name' : 'Rick',
+                        'lastname' : 'Sanchez'
                     }
                     ]]></ee:set-payload>
                 </ee:message>
             </ee:transform>
         </body>
         <output type="PersonJsonType" doc:description="Payload's output"/>
+    </operation>
+
+    <operation name="set-payload-through-dw-fun" doc:description="Sets the payload to the structure of PersonJsonType through a function call">
+        <body>
+            <ee:transform>
+                <ee:message>
+                    <ee:set-payload><![CDATA[
+                    %dw 2.0
+                    output application/json encoding='UTF-8'
+                    ---
+                    {
+                        'number' : dw::modules::weirdFolder::dwModule::five()
+                    }
+                    ]]></ee:set-payload>
+                </ee:message>
+            </ee:transform>
+        </body>
+        <output type="number" doc:description="Payload's output"/>
+    </operation>
+
+    <operation name="set-payload-through-dw-fun-with-string-type" doc:description="Sets the payload to the parameterized string 'name' through a function call passing through parameters">
+        <parameters>
+            <parameter name="name" type="string"/>
+        </parameters>
+        <body>
+            <ee:transform>
+                <ee:message>
+                    <ee:set-payload><![CDATA[
+                    %dw 2.0
+                    output application/json encoding='UTF-8'
+                    ---
+                        dw::modules::weirdFolder::dwModule::echo(vars.name)
+                    ]]></ee:set-payload>
+                </ee:message>
+            </ee:transform>
+        </body>
+        <output type="string" doc:description="Payload's output"/>
+    </operation>
+    
+    <operation name="set-payload-through-dw-fun-with-person-type" doc:description="Sets the payload to the structure of PersonJsonType through a function call passing through parameters">
+        <parameters>
+            <parameter name="person" type="PersonJsonType"/>
+        </parameters>
+        <body>
+            <ee:transform>
+                <ee:message>
+                    <ee:set-payload><![CDATA[
+                    %dw 2.0
+                    output application/json encoding='UTF-8'
+                    ---
+                        dw::modules::weirdFolder::dwModule::toUpper(vars.person)
+                    ]]></ee:set-payload>
+                </ee:message>
+            </ee:transform>
+        </body>
+        <output type="PersonJsonType" doc:description="Payload's output uppercased"/>
+    </operation>
+
+    <operation name="set-payload-through-dw-fun-with-persons-type" doc:description="Sets the payload to the structure of PersonsJsonType through a function call passing through parameters">
+        <parameters>
+            <parameter name="persons" type="PersonsJsonType"/>
+        </parameters>
+        <body>
+            <ee:transform>
+                <ee:message>
+                    <ee:set-payload><![CDATA[
+                    %dw 2.0
+                    output application/json encoding='UTF-8'
+                    ---
+                        dw::modules::weirdFolder::dwModule::toUpper(vars.persons)
+                    ]]></ee:set-payload>
+                </ee:message>
+            </ee:transform>
+        </body>
+        <output type="PersonsJsonType" doc:description="Payload's output uppercased"/>
     </operation>
 
  </module>

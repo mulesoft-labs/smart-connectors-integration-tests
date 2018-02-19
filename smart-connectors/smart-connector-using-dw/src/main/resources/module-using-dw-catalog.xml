@@ -2,7 +2,11 @@
 <catalogs xmlns="http://www.mulesoft.org/schema/mule/types" >
 
     <catalog name="PersonJsonType" format="application/json">
-        <schema format="application/json+schema" location="./personJsonType-schema.json" />
+        <schema format="application/json+schema" location="./person-schema.json" />
+    </catalog>
+
+    <catalog name="PersonsJsonType" format="application/json">
+        <schema format="application/json+schema" location="./persons-schema.json" />
     </catalog>
 
 </catalogs>

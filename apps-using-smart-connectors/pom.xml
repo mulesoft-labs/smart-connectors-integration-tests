@@ -29,6 +29,7 @@
         <module>app-sc-using-core</module>
         <module>app-sc-using-validation</module>
         <module>app-sc-using-java</module>
+        <module>app-sc-using-dw</module>
     </modules>
     
     <build>
