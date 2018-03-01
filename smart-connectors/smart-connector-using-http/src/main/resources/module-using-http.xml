@@ -11,17 +11,6 @@
            http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
            http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-    <property name="username" type="string" doc:description="the login user credential."/>
-    <property name="password" type="string" password="true" doc:description="the login password credential"/>
-
-    <httpn:request-config name="github-httpreq-config" basePath="/">
-        <httpn:request-connection host="api.github.com" protocol="HTTPS" port="443">
-            <httpn:authentication>
-                <httpn:basic-authentication username="#[vars.username]" password="#[vars.password]"/>
-            </httpn:authentication>
-        </httpn:request-connection>
-    </httpn:request-config>
-
     <operation name="search-issues" doc:description="Get a list of Issue objects that match the specified filter data">
         <parameters>
             <parameter name="repo" type="string" doc:description="the repository name"/>
@@ -29,7 +18,7 @@
         </parameters>
         <body>
             <mule:logger level="ERROR" doc:name="Logger" message="#[mel: 'repo:[' + vars.repo + '], since:[' + vars.since +']']" />
-            <httpn:request config-ref="github-httpreq-config" path="search/issues" method="GET" >
+            <httpn:request url="search/issues" method="GET" >
                 <httpn:query-params>
                     #[{'q' : 'repo:' ++ vars.repo ++ ' created:>=' ++ vars.since, 'type' : 'Issues'}]
                 </httpn:query-params>

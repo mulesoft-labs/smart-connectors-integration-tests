@@ -21,4 +21,53 @@
         <module>apps-using-smart-connectors</module>
     </modules>
 
+
+    <repositories>
+        <repository>
+            <id>mule-ee-private</id>
+            <name>Private Release Repo</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>mule-ee-snapshots</id>
+            <name>Internal Release Repo</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/ci-snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>releases-ee</id>
+            <name>Mule Release Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/releases-ee/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>mulesoft-private</id>
+            <name>Mulesoft Private</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/private</url>
+        </repository>
+        <repository>
+            <id>mule-ee-releases</id>
+            <name>Internal Release Repo</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/ci-releases/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>mule-plugin</id>
+            <name>Mule Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
 </project>

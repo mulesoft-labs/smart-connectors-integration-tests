@@ -38,6 +38,53 @@
 			<scope>compile</scope>
 			<classifier>mule-plugin</classifier>
 		</dependency>
+		<dependency>
+			<groupId>org.mule.extensions.smart</groupId>
+			<artifactId>smart-connector-using-http</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+			<classifier>mule-plugin</classifier>
+		</dependency>
 	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>mule-ee-private</id>
+			<name>Private Release Repo</name>
+			<url>https://repository.mulesoft.org/nexus/content/repositories/snapshots/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>mule-ee-snapshots</id>
+			<name>Internal Release Repo</name>
+			<url>https://repository.mulesoft.org/nexus/content/repositories/ci-snapshots/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>releases-ee</id>
+			<name>Mule Release Repository</name>
+			<url>https://repository.mulesoft.org/nexus/content/repositories/releases-ee/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>mulesoft-private</id>
+			<name>Mulesoft Private</name>
+			<url>https://repository.mulesoft.org/nexus/content/repositories/private</url>
+		</repository>
+		<repository>
+			<id>mule-ee-releases</id>
+			<name>Internal Release Repo</name>
+			<url>https://repository.mulesoft.org/nexus/content/repositories/ci-releases/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 </project>

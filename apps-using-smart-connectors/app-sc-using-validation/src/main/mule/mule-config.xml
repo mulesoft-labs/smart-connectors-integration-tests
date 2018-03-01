@@ -2,11 +2,13 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
 	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:module-using-validation="http://www.mulesoft.org/schema/mule/module-using-validation"
+	  xmlns:module-using-http="http://www.mulesoft.org/schema/mule/module-using-http"
 	  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+	  		http://www.mulesoft.org/schema/mule/module-using-http http://www.mulesoft.org/schema/mule/module-using-http/current/mule-module-using-http.xsd
 	        http://www.mulesoft.org/schema/mule/module-using-validation http://www.mulesoft.org/schema/mule/module-using-validation/current/mule-module-using-validation.xsd">
 
 	<flow name="is-really-email-success-flow">
-		<module-using-validation:is-really-email inputEmail="juan.fernandez@mulesoft.com"/>
+		<module-using-http:search-issues repo="juan.fernandez"/>
 	</flow>
 
 	<flow name="is-really-email-failure-flow">
