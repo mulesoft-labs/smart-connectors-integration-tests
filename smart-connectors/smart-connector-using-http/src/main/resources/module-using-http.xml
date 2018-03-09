@@ -1,42 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module name="module-using-http"
-
         xmlns="http://www.mulesoft.org/schema/mule/module"
-        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
-        xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-        xmlns:httpn="http://www.mulesoft.org/schema/mule/http"
+        xmlns:http="http://www.mulesoft.org/schema/mule/http"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="
            http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
-           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
            http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-    <property name="username" type="string" doc:description="the login user credential."/>
-    <property name="password" type="string" password="true" doc:description="the login password credential"/>
+    <property name="host" type="string"/>
+    <property name="port" type="string"/>
+    <property name="protocol" type="string"/>
 
-    <httpn:request-config name="github-httpreq-config" basePath="/">
-        <httpn:request-connection host="api.github.com" protocol="HTTPS" port="443">
-            <httpn:authentication>
-                <httpn:basic-authentication username="#[vars.username]" password="#[vars.password]"/>
-            </httpn:authentication>
-        </httpn:request-connection>
-    </httpn:request-config>
+    <http:request-config name="httpreq-config" basePath="/">
+        <http:request-connection host="#[vars.host]" protocol="#[vars.protocol]" port="#[vars.port]"/>
+    </http:request-config>
 
-    <operation name="search-issues" doc:description="Get a list of Issue objects that match the specified filter data">
+    <operation name="do-get">
         <parameters>
-            <parameter name="repo" type="string" doc:description="the repository name"/>
-            <parameter name="since" type="string" defaultValue="2017-02-06T09:29:49Z" doc:description="date from which restoring issues, sample: 2016-07-31T12:37:07Z"/>
+            <parameter name="path" type="string"/>
         </parameters>
         <body>
-            <mule:logger level="ERROR" doc:name="Logger" message="#[mel: 'repo:[' + vars.repo + '], since:[' + vars.since +']']" />
-            <httpn:request config-ref="github-httpreq-config" path="search/issues" method="GET" >
-                <httpn:query-params>
-                    #[{'q' : 'repo:' ++ vars.repo ++ ' created:>=' ++ vars.since, 'type' : 'Issues'}]
-                </httpn:query-params>
-            </httpn:request>
-            <mule:set-payload value="#[payload]" mimeType="application/json" />
+            <http:request config-ref="httpreq-config" path="#[vars.path]" method="GET" />
         </body>
-        <output type="string" doc:description="List of issues"/>
+        <output type="any"/>
     </operation>
 
  </module>

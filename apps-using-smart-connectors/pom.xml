@@ -30,6 +30,7 @@
         <module>app-sc-using-validation</module>
         <module>app-sc-using-java</module>
         <module>app-sc-using-dw</module>
+        <module>app-sc-using-http</module>
     </modules>
     
     <build>
@@ -57,10 +58,8 @@
                         </execution>
                     </executions>
                     <configuration>
-                        <randomFailMessages>true</randomFailMessages>
                         <dynamicPorts>
                             <dynamicPort>a.dynamic.port</dynamicPort>
-                            <dynamicPort>mock.inbounds.test.port</dynamicPort>
                         </dynamicPorts>
                         <environmentVariables>
                             <MY_ENV>envVar</MY_ENV>
