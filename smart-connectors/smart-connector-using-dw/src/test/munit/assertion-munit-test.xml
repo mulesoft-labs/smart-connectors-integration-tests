@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:module-using-dw="http://www.mulesoft.org/schema/mule/module-using-dw"
+
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munitext="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/module-using-dw http://www.mulesoft.org/schema/mule/module-using-dw/current/mule-module-using-dw.xsd
+        http://www.mulesoft.org/schema/mule/core      http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/munit     http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+        http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+
+    <munit:config name="assertion-test.xml"/>
+
+    <munit:test name="test-set-payload-through-dw-flow" description="">
+        <munit:execution>
+            <flow-ref name="set-payload-through-dw-flow" />
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- payload.name]" is="#[MunitTools::equalTo('Rick')]" message="Oops this should have been true"/>
+            <munitext:assert-that expression="#[output application/java --- payload.lastname]" is="#[MunitTools::equalTo('Sanchez')]" message="Oops this should have been true"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="test-set-payload-through-dw-fun-flow" description="">
+        <munit:execution>
+            <flow-ref name="set-payload-through-dw-fun-flow" />
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- payload.number]" is="#[MunitTools::equalTo(5)]" message="Oops this should have been true"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="test-set-payload-through-dw-fun-with-string-type-flow" description="">
+        <munit:execution>
+            <flow-ref name="set-payload-through-dw-fun-with-string-type-flow" />
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- payload]" is="#[MunitTools::equalTo('lautaro')]" message="Oops this should have been true"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="test-set-payload-through-dw-fun-with-person-type-flow" description="">
+        <munit:execution>
+            <flow-ref name="set-payload-through-dw-fun-with-person-type-flow" />
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- payload.name]" is="#[MunitTools::equalTo('RICK')]" message="Oops this should have been true"/>
+            <munitext:assert-that expression="#[output application/java --- payload.lastname]" is="#[MunitTools::equalTo('SANCHEZ')]" message="Oops this should have been true"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="test-set-payload-through-dw-fun-with-persons-type-flow" description="">
+        <munit:execution>
+            <flow-ref name="set-payload-through-dw-fun-with-persons-type-flow" />
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- sizeOf(payload)]" is="#[MunitTools::equalTo(2)]" message="Oops this should have been true"/>
+
+            <munitext:assert-that expression="#[output application/java --- payload[0].name]" is="#[MunitTools::equalTo('RICK')]" message="Oops this should have been true"/>
+            <munitext:assert-that expression="#[output application/java --- payload[0].lastname]" is="#[MunitTools::equalTo('SANCHEZ')]" message="Oops this should have been true"/>
+            
+            <munitext:assert-that expression="#[output application/java --- payload[1].name]" is="#[MunitTools::equalTo('LAUTARO')]" message="Oops this should have been true"/>
+            <munitext:assert-that expression="#[output application/java --- payload[1].lastname]" is="#[MunitTools::equalTo('FERNANDEZ')]" message="Oops this should have been true"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="test-set-payload-invoking-directly-dw-fun-flow" description="">
+        <munit:execution>
+            <flow-ref name="set-payload-invoking-directly-dw-fun-flow" />
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- payload]" is="#[MunitTools::equalTo(5)]" message="Oops this should have been true"/>
+        </munit:validation>
+    </munit:test>
+
+
+
+    <!--flow refs below-->
+
+    <flow name="set-payload-through-dw-flow">
+        <module-using-dw:set-payload-through-dw/>
+    </flow>
+
+    <flow name="set-payload-through-dw-fun-flow">
+        <module-using-dw:set-payload-through-dw-fun/>
+    </flow>
+
+    <flow name="set-payload-through-dw-fun-with-string-type-flow">
+        <module-using-dw:set-payload-through-dw-fun-with-string-type name="lautaro"/>
+    </flow>
+
+    <flow name="set-payload-through-dw-fun-with-person-type-flow">
+        <module-using-dw:set-payload-through-dw-fun-with-person-type person="#[ {'name' : 'Rick', 'lastname' : 'Sanchez'} ]"/>
+    </flow>
+
+    <flow name="set-payload-through-dw-fun-with-persons-type-flow">
+        <module-using-dw:set-payload-through-dw-fun-with-persons-type persons="#[ [{ 'name' : 'Rick', 'lastname' : 'Sanchez' } , { 'name' : 'Lautaro', 'lastname' : 'Fernandez' } ]]"/>
+    </flow>
+
+    <flow name="set-payload-invoking-directly-dw-fun-flow">
+        <!-- showing that the application also has access to the DW functions located in the dw/modules/weirdFolder/dwModule.dwl
+        file defined in the module's code-->
+        <set-payload value="#[dw::modules::weirdFolder::dwModule::five()]"/>
+    </flow>
+</mule>

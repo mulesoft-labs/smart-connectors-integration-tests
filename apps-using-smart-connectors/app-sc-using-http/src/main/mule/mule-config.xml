@@ -11,14 +11,25 @@
 		<http:listener-connection host="localhost" port="${a.dynamic.port}"/>
 	</http:listener-config>
 
-    <module-using-http:config name="httpModule" host="localhost" port="${a.dynamic.port}" protocol="HTTP"/>
+    <!--<module-using-http:config name="httpModule" host="localhost" port="${a.dynamic.port}" protocol="HTTP"/>-->
 
-    <flow name="do-get-flow">
-		<module-using-http:do-get config-ref="httpModule" path="/thePath"/>
-	</flow>
+    <!--<flow name="do-get-flow">-->
+		<!--<module-using-http:do-get config-ref="httpModule" path="/thePath"/>-->
+	<!--</flow>-->
 
     <flow name="listenerFlow">
         <http:listener path="thePath" config-ref="http-listener"/>
         <set-payload value="Wubba lubba dub dub"/>
     </flow>
+
+
+	<!--temporal until it works-->
+	<http:request-config name="httpreq-config" basePath="/">
+		<http:request-connection host="localhost" protocol="HTTP" port="${a.dynamic.port}"/>
+	</http:request-config>
+
+	<flow name="do-get-flow">
+		<http:request config-ref="httpreq-config" path="/thePath" method="GET" />
+	</flow>
+
 </mule>

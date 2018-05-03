@@ -13,7 +13,7 @@
     <description>Parent pom of a set of smart connectors and some mule applications that make use of those</description>
  
     <properties>
-        <mule.version>4.0.0</mule.version>
+        <mule.version>4.1.0</mule.version>
     </properties>
 
     <modules>

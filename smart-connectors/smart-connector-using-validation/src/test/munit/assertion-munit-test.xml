@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:module-using-validation="http://www.mulesoft.org/schema/mule/module-using-validation"
+
       xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
       xmlns:munitext="http://www.mulesoft.org/schema/mule/munit-tools"
       xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:mule="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="
         http://www.mulesoft.org/schema/mule/core      http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/module-using-validation http://www.mulesoft.org/schema/mule/module-using-validation/current/mule-module-using-validation.xsd
         http://www.mulesoft.org/schema/mule/munit     http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
         http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
 
@@ -14,7 +17,7 @@
     <munit:test name="test-is-really-email-success-flow" description="">
         <munit:execution>
             <mule:set-payload value="payload before validating email through smart connector"/>
-            <flow-ref name="is-really-email-success-flow" />
+            <module-using-validation:is-really-email inputEmail="juan.fernandez@mulesoft.com"/>
         </munit:execution>
         <munit:validation>
             <munitext:assert-that expression="#[payload]" is="#[MunitTools::equalTo('payload before validating email through smart connector')]" message="Oops this should have been true"/>
@@ -26,4 +29,8 @@
             <flow-ref name="is-really-email-failure-flow" />
         </munit:execution>
     </munit:test>
+
+    <flow name="is-really-email-failure-flow">
+        <module-using-validation:is-really-email inputEmail="juan.fernandezmulesoft.com"/>
+    </flow>
 </mule>

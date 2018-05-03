@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:module-using-java="http://www.mulesoft.org/schema/mule/module-using-java"
+
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munitext="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/module-using-java http://www.mulesoft.org/schema/mule/module-using-java/current/mule-module-using-java.xsd
+        http://www.mulesoft.org/schema/mule/core      http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/munit     http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+        http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+
+    <munit:config name="assertion-test.xml"/>
+
+    <munit:test name="test-static-invoke-flow" description="">
+        <munit:execution>
+            <flow-ref name="static-invoke-flow" />
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[payload.^class]" is="#[MunitTools::equalTo('org.mule.daPackage.ExecutableElement')]" message="Oops this should have been true"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="test-invoke-flow" description="">
+        <munit:execution>
+            <flow-ref name="static-invoke-flow" />
+            <set-variable variableName="instance" value="#[payload]"/>
+            <flow-ref name="invoke-flow" />
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Hi')]" message="Oops this should have been true"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="test-invoke-with-args-flow" description="">
+        <munit:execution>
+            <flow-ref name="static-invoke-flow" />
+            <set-variable variableName="instance" value="#[payload]"/>
+            <set-variable variableName="args" value="#[{'arg0':'Lautaro'}]"/>
+            <flow-ref name="invoke-with-args-flow" />
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Hi Lautaro')]" message="Oops this should have been true"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="test-new-flow" description="">
+        <munit:execution>
+            <flow-ref name="new-flow" />
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[payload.^class]" is="#[MunitTools::equalTo('org.mule.daPackage.ExecutableElement')]" message="Oops this should have been true"/>
+        </munit:validation>
+    </munit:test>
+
+    <!--flows below-->
+    <flow name="static-invoke-flow">
+        <module-using-java:invoke-static-method/>
+    </flow>
+
+    <flow name="invoke-flow">
+        <module-using-java:invoke-method instance="#[vars.instance]"/>
+    </flow>
+
+    <flow name="invoke-with-args-flow">
+        <module-using-java:invoke-method-with-args instance="#[vars.instance]" args="#[vars.args]"/>
+    </flow>
+
+    <flow name="new-flow">
+        <module-using-java:new-method/>
+    </flow>
+</mule>

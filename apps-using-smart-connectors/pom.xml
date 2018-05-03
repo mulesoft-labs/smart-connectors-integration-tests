@@ -42,7 +42,6 @@
                     <version>${mule.maven.plugin.version}</version>
                     <extensions>true</extensions>
                 </plugin>
-
                 <!-- MUnit plugin-->
                 <plugin>
                     <groupId>com.mulesoft.munit.tools</groupId>
