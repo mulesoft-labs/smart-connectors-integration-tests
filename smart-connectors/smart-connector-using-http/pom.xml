@@ -16,8 +16,6 @@
     <description>A Mule extension done with pure Mule DSL that depends on the HTTP Connector (http:requester-config, http:requester, etc. )</description>
 
     <properties>
-        <!-- compatibility broke -->
-        <mule.version>4.1.1</mule.version>
         <mule.module.http.version>1.2.0</mule.module.http.version>
     </properties>
     
