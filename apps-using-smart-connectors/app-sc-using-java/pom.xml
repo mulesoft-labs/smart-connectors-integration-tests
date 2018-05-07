@@ -13,12 +13,6 @@
 	<name>Mule App: depends SC using Java module</name>
 	<packaging>mule-application</packaging>
 
-	<properties>
-		<mule.maven.plugin.version>3.1.0-SNAPSHOT</mule.maven.plugin.version>
-		<munit.runtime.version>2.1.0-SNAPSHOT</munit.runtime.version>
-		<munit.maven.plugin.version>2.1.0-SNAPSHOT</munit.maven.plugin.version>
-	</properties>
-
 	<build>
 		<plugins>
 			<plugin>

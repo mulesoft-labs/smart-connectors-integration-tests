@@ -16,8 +16,9 @@
     <description>A Mule extension done with pure Mule DSL that depends on the HTTP Connector (http:requester-config, http:requester, etc. )</description>
 
     <properties>
-        <mule.extensions.maven.plugin.version>1.1.0</mule.extensions.maven.plugin.version>
-        <mule.module.http.version>1.0.0</mule.module.http.version>
+        <!-- compatibility broke -->
+        <mule.version>4.1.1</mule.version>
+        <mule.module.http.version>1.2.0</mule.module.http.version>
     </properties>
     
     <dependencies>

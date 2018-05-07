@@ -21,8 +21,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         
         <mule.maven.plugin.version>3.0.0</mule.maven.plugin.version>
-        <munit.runtime.version>2.0.0</munit.runtime.version>
-        <munit.maven.plugin.version>2.0.0</munit.maven.plugin.version>
+        <munit.runtime.version>2.1.0</munit.runtime.version>
+        <munit.maven.plugin.version>2.1.0</munit.maven.plugin.version>
     </properties>
 
     <modules>

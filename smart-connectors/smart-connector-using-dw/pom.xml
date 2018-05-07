@@ -15,10 +15,6 @@
     <name>Smart Connector: using DW</name>
     <description>A Mule extension done with pure Mule DSL that depends JUST in the DW MP ('ee:transform')</description>
 
-    <properties>
-        <mule.extensions.maven.plugin.version>1.1.0</mule.extensions.maven.plugin.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.mulesoft.mule.runtime.modules</groupId>

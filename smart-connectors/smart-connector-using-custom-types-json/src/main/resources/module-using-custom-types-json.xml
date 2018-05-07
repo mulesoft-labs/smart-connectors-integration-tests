@@ -11,6 +11,9 @@
            http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <operation name="set-payload-hardcoded" doc:description="Sets the payload to the String value 'Wubba Lubba Dub Dub'">
+        <parameters>
+            <parameter name="anEnumParameter" type="an-enum-type"/>
+        </parameters>
         <body>
             <mule:set-payload value="Wubba Lubba Dub Dub"/>
         </body>

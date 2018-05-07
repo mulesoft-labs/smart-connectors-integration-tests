@@ -16,7 +16,7 @@
     <description>A Mule extension done with pure Mule DSL that depends on the Java Module (file:config, file:list, etc. )</description>
 
     <properties>
-        <mule.module.java.version>1.0.0-SNAPSHOT</mule.module.java.version>
+        <mule.module.java.version>1.0.0</mule.module.java.version>
     </properties>
 
     <dependencies>

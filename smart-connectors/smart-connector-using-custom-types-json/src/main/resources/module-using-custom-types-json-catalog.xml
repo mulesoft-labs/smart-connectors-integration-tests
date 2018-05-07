@@ -5,4 +5,8 @@
         <schema format="application/json+schema" location="./a-custom-type-schema.json" />
     </catalog>
 
+    <catalog name="an-enum-type" format="application/json">
+        <schema format="application/json+schema" location="./an-enum-type-schema.json" />
+    </catalog>
+
 </catalogs>
