@@ -26,11 +26,8 @@
 
     <munit:test name="test-is-really-email-failure-flow" description="" expectedErrorType="VALIDATION:INVALID_EMAIL">
         <munit:execution>
-            <flow-ref name="is-really-email-failure-flow" />
+            <module-using-validation:is-really-email inputEmail="juan.fernandezmulesoft.com"/>
         </munit:execution>
     </munit:test>
 
-    <flow name="is-really-email-failure-flow">
-        <module-using-validation:is-really-email inputEmail="juan.fernandezmulesoft.com"/>
-    </flow>
 </mule>
