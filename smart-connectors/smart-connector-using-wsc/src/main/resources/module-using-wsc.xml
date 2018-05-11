@@ -14,7 +14,7 @@
 
     <property name="address" type="string" />
 
-    <wsc:config name="Web_Service_Consumer_Config">
+    <wsc:config name="wsc-config">
         <!-- the 'delta-for-wsc.wsdl could be parameterized too, but we will leave it here to demonstrate how should be packaged when using smart connectors -->
         <wsc:connection wsdlLocation="delta-for-wsc.wsdl"
                         service="TicketServiceService" port="TicketServicePort"
@@ -23,7 +23,7 @@
 
     <operation name="get-all-flights">
         <body>
-            <wsc:consume operation="listAllFlights" config-ref="Web_Service_Consumer_Config" >
+            <wsc:consume operation="listAllFlights" config-ref="wsc-config" >
                 <wsc:message >
                     <wsc:body ><![CDATA[#[%dw 2.0
 output application/xml
@@ -44,7 +44,7 @@ ns ns0 http://soap.training.mulesoft.com/
             <parameter name="aDestination" type="string"/>
         </parameters>
         <body>
-            <wsc:consume config-ref="Web_Service_Consumer_Config" operation="findFlight">
+            <wsc:consume config-ref="wsc-config" operation="findFlight">
                 <wsc:message >
                     <wsc:body ><![CDATA[#[%dw 2.0
 output application/xml
