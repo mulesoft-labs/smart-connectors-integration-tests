@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:module-using-wsc="http://www.mulesoft.org/schema/mule/module-using-wsc"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munitext="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns:apikit-soap="http://www.mulesoft.org/schema/mule/apikit-soap"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/module-using-wsc http://www.mulesoft.org/schema/mule/module-using-wsc/current/mule-module-using-wsc.xsd
+        http://www.mulesoft.org/schema/mule/core      http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/apikit-soap http://www.mulesoft.org/schema/mule/apikit-soap/current/mule-apikit-soap.xsd
+        http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+        http://www.mulesoft.org/schema/mule/munit     http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+        http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+
+    <munit:config name="assertion-test.xml"/>
+
+    <module-using-wsc:config name="scWSC" address="http://localhost:${a.dynamic.port}/TicketServiceService/TicketServicePort"/>
+
+    <munit:test name="test-get-all-flights-flow" description="">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="api-main"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <module-using-wsc:get-all-flights config-ref="scWSC"/>
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- payload.listAllFlightsResponse]" is="#[MunitTools::notNullValue()]" message="Oops this should have been true"/>
+            <munitext:assert-that expression="#[output application/java --- sizeOf(payload.listAllFlightsResponse)]" is="#[MunitTools::equalTo(2)]" message="Oops this should have been true"/>
+            <!--asserting SFO response-->
+            <set-variable variableName="actual" value="#[output application/java --- payload.listAllFlightsResponse[0]]"/>
+            <flow-ref name="assert-sfo"/>
+            <!--asserting EZE response-->
+            <set-variable variableName="actual" value="#[output application/java --- payload.listAllFlightsResponse[1]]"/>
+            <flow-ref name="assert-eze"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="test-get-flight-for-SFO-flow" description="">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="api-main"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <module-using-wsc:get-flight config-ref="scWSC" aDestination="SFO"/>
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- payload.findFlightResponse]" is="#[MunitTools::notNullValue()]" message="Oops this should have been true"/>
+            <munitext:assert-that expression="#[output application/java --- sizeOf(payload.findFlightResponse)]" is="#[MunitTools::equalTo(1)]" message="Oops this should have been true"/>
+            <!--asserting SFO response-->
+            <set-variable variableName="actual" value="#[output application/java --- payload.findFlightResponse.return]"/>
+            <flow-ref name="assert-sfo"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="test-get-flight-for-EZE-flow" description="">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="api-main"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <module-using-wsc:get-flight config-ref="scWSC" aDestination="EZE"/>
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- payload.findFlightResponse]" is="#[MunitTools::notNullValue()]" message="Oops this should have been true"/>
+            <munitext:assert-that expression="#[output application/java --- sizeOf(payload.findFlightResponse)]" is="#[MunitTools::equalTo(1)]" message="Oops this should have been true"/>
+            <!--asserting EZE response-->
+            <set-variable variableName="actual" value="#[output application/java --- payload.findFlightResponse.return]"/>
+            <flow-ref name="assert-eze"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="test-get-flight-for-non-existing-destination-flow" description="">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="api-main"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <module-using-wsc:get-flight config-ref="scWSC" aDestination="THIS_ONE_WILL_FAIL"/>
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- payload.Fault]" is="#[MunitTools::notNullValue()]" message="Oops this should have been true"/>
+            <munitext:assert-that expression="#[output application/java --- payload.Fault.faultcode ]" is="#[MunitTools::equalTo('NON_EXISTING_DESTINATION:Server')]"/>
+            <munitext:assert-that expression="#[output application/java --- payload.Fault.faultstring ]" is="#[MunitTools::equalTo('Destination [THIS_ONE_WILL_FAIL] does not exist')]"/>
+
+        </munit:validation>
+    </munit:test>
+
+    <!-- helper flows to tests the hardcoded responses in apikit-->
+
+    <flow name="assert-sfo">
+        <munitext:assert-that expression="#[output application/java --- vars.actual.emptySeats ]" is="#[MunitTools::equalTo('10')]"/>
+        <munitext:assert-that expression="#[output application/java --- vars.actual.code ]" is="#[MunitTools::equalTo('555')]"/>
+        <munitext:assert-that expression="#[output application/java --- vars.actual.destination ]" is="#[MunitTools::equalTo('SFO')]"/>
+    </flow>
+
+    <flow name="assert-eze">
+        <munitext:assert-that expression="#[output application/java --- vars.actual.emptySeats ]" is="#[MunitTools::equalTo('10')]"/>
+        <munitext:assert-that expression="#[output application/java --- vars.actual.code ]" is="#[MunitTools::equalTo('000')]"/>
+        <munitext:assert-that expression="#[output application/java --- vars.actual.destination ]" is="#[MunitTools::equalTo('EZE')]"/>
+    </flow>
+
+
+    <!-- ========================================================================================================================
+    =================  APIKIT-SOAP begin exposing the endpoint to test the WSC through the smart connector ======================
+    ==========================================================================================================================-->
+    <http:listener-config name="api-httpListenerConfig">
+        <http:listener-connection host="localhost" port="${a.dynamic.port}"/>
+    </http:listener-config>
+    <apikit-soap:config name="soapkit-config" port="TicketServicePort" service="TicketServiceService" wsdlLocation="delta.wsdl"/>
+    <flow name="api-main">
+        <http:listener config-ref="api-httpListenerConfig" path="/TicketServiceService/TicketServicePort">
+            <http:response>
+                <http:body>#[payload]</http:body>
+                <http:headers>#[attributes.protocolHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response>
+                <http:body>#[payload]</http:body>
+                <http:headers>#[attributes.protocolHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit-soap:router config-ref="soapkit-config">
+            <apikit-soap:attributes><![CDATA[#[
+              %dw 2.0
+              output application/java
+              ---
+              {
+                  headers: attributes.headers,
+                  method: attributes.method,
+                  queryString: attributes.queryString
+            }]]]></apikit-soap:attributes>
+        </apikit-soap:router>
+    </flow>
+    <flow name="listAllFlights:\soapkit-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://soap.training.mulesoft.com/
+---
+{
+  ns0#listAllFlightsResponse: {
+    return: {
+      emptySeats: 10,
+      code: "555",
+      destination: "SFO"
+    },
+    return: {
+      emptySeats: 10,
+      code: "000",
+      destination: "EZE"
+    }
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="findFlight:\soapkit-config">
+        <ee:transform  >
+            <ee:message >
+                <ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns soap http://schemas.xmlsoap.org/soap/envelope
+ns ns0 http://soap.training.mulesoft.com/
+var acceptedDestinations = ["SFO", "EZE"]
+var destination = payload.body.ns0#findFlight.destination
+---
+if (acceptedDestinations contains destination){
+  ns0#findFlightResponse: {
+    return: {
+        emptySeats: "10",
+        code: if (destination == "SFO") "555" else "000",
+        destination: destination
+    }
+  }
+} else {
+  soap#Fault: {
+      faultcode: "NON_EXISTING_DESTINATION:Server",
+      faultstring: "Destination [$destination] does not exist"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <!-- ========================================================================================================================
+    ==================  APIKIT-SOAP end exposing the endpoint to test the WSC through the smart connector =======================
+    ==========================================================================================================================-->
+
+</mule>

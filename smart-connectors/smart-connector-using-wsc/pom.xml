@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.mule.extensions.smart</groupId>
+        <artifactId>smart-connectors-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>                                                              
+
+    <artifactId>smart-connector-using-wsc</artifactId>
+    <packaging>mule-extension</packaging>
+
+    <name>Smart Connector: using WSC Connector</name>
+    <description>A Mule extension done with pure Mule DSL that depends on the WSC Connector (wsc:config, wsc:consume, etc. )</description>
+
+    <properties>
+        <mule.module.wsc.version>1.1.1</mule.module.wsc.version>
+        <mule.http.connector.test.version>1.2.0</mule.http.connector.test.version>
+        <mule.soapkit.module.test.version>1.1.2</mule.soapkit.module.test.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-wsc-connector</artifactId>
+            <version>${mule.module.wsc.version}</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+        <!-- TEST:: APIKIT for SOAP dependencies -->
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-soapkit-module</artifactId>
+            <version>${mule.soapkit.module.test.version}</version>
+            <classifier>mule-plugin</classifier>
+            <!-- BUG: it should be provided, but I get an NPE in AbstractDeployableDescriptorFactory.createArtifactPluginDescriptors(AbstractDeployableDescriptorFactory.java:69)-->
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-http-connector</artifactId>
+            <version>${mule.http.connector.test.version}</version>
+            <classifier>mule-plugin</classifier>
+            <!-- BUG: it should be provided, but I get an NPE in AbstractDeployableDescriptorFactory.createArtifactPluginDescriptors(AbstractDeployableDescriptorFactory.java:69)-->
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+</project>

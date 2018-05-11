@@ -36,6 +36,7 @@
         <module>smart-connector-using-java</module>
         <module>smart-connector-using-smart-connector</module>
         <module>smart-connector-using-validation</module>
+        <module>smart-connector-using-wsc</module>
     </modules>
 
     <dependencies>

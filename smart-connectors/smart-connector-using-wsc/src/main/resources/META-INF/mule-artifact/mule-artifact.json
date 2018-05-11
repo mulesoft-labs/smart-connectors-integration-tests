@@ -1,0 +1,22 @@
+{
+  "extensionModelLoaderDescriptor": {
+    "id": "xml-based",
+    "attributes": {
+      "validate-xml": true,
+      "resource-xml": "module-using-wsc.xml"
+    }
+  },
+  "name": "module-using-wsc",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedResources": [
+        "delta-for-wsc.wsdl"
+      ]
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule"
+  }
+}

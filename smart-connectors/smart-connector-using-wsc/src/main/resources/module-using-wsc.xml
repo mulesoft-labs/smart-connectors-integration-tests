@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-wsc"
+        doc:description="This module relies entirely in runtime provided components (no other Plugin dependencies)"
+
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+        xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+        xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+           http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+
+    <property name="address" type="string" />
+
+    <wsc:config name="Web_Service_Consumer_Config">
+        <!-- the 'delta-for-wsc.wsdl could be parameterized too, but we will leave it here to demonstrate how should be packaged when using smart connectors -->
+        <wsc:connection wsdlLocation="delta-for-wsc.wsdl"
+                        service="TicketServiceService" port="TicketServicePort"
+                        address="#[vars.address]" />
+    </wsc:config>
+
+    <operation name="get-all-flights">
+        <body>
+            <wsc:consume operation="listAllFlights" config-ref="Web_Service_Consumer_Config" >
+                <wsc:message >
+                    <wsc:body ><![CDATA[#[%dw 2.0
+output application/xml
+ns ns0 http://soap.training.mulesoft.com/
+---
+{
+	ns0#listAllFlights: null
+}]]]></wsc:body>
+                </wsc:message>
+            </wsc:consume>
+            <mule:set-payload value="#[payload.body]"/>
+        </body>
+        <output type="any"/>
+    </operation>
+
+    <operation name="get-flight">
+        <parameters>
+            <parameter name="aDestination" type="string"/>
+        </parameters>
+        <body>
+            <wsc:consume config-ref="Web_Service_Consumer_Config" operation="findFlight">
+                <wsc:message >
+                    <wsc:body ><![CDATA[#[%dw 2.0
+output application/xml
+ns ns0 http://soap.training.mulesoft.com/
+---
+{
+	ns0#findFlight: {
+		destination: vars.aDestination
+	}
+}]]]></wsc:body>
+                </wsc:message>
+            </wsc:consume>
+            <mule:set-payload value="#[payload.body]"/>
+        </body>
+        <output type="any"/>
+    </operation>
+ </module>
