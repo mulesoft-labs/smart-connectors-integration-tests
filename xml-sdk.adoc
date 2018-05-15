@@ -1,0 +1,1275 @@
+= XML SDK
+:keywords:
+
+:toc:
+
+== About XML SDK
+
+An XML SDK is a component that can be used in Mule applications that's been custom created via a specific framework. This framework allows you to create components entirely by using other existing Mule components.
+
+Creating an XML SDK should feel familiar to someone with experience creating Mule applications. The framework adds just a few syntactic idioms to enclose the main parts of XML SDK, such as `<module>`, `<operation>s`, and `<parameter>s`. Below is a short snippet that defines a single operation in the `Hello XML SDK`:
+
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="Hello XML SDK"  ...>
+  <operation name="say-hello" doc:description="Greets you!">
+    <body>
+      <mule:set-payload value="Hello World!"/>
+    </body>
+    <output type="string"/>
+  </operation>
+</module>
+----
+
+The usage of this component in a Mule flow is the same as that of any other connector. In the example below, executing the flow `"random-flow"` sets the payload to `"Hello World!"`, as defined in the operation `<hello-smart-connector:say-hello>`.
+
+[source,xml,linenums]
+----
+<flow name="random-flow">
+  <hello-smart-connector:say-hello>
+</module>
+----
+
+When debugging an XML SDK, the reuse of existing components greatly reduces the difficulty of finding where an error is.
+
+It's also worth mentioning that XML SDK are strongly typed. This means that every defined parameter for every operation is statically known, for both the input and output.
+
+== Basics of an XML SDK
+
+The structure of an XML SDK is composed of three key elements that delineate both its behavior and how the runtime interacts with it:
+
+
+* *Operations*
+* *Properties*
+* The enclosing *Module*
+
+
+=== Operations
+
+An `<operation>`, similar to a function, is a prescriptive way of defining a set of input parameters and a single output. Like a function, it has *input parameters*, it performs actions (described in the *body*) and has a single *output*. Unlike a function, the behavior of an operation could vary if it stores values or references external sources.
+
+
+* *Input parameters*: declares a set of types to be entered when calling the operation.
++
+Keep in mind that these parameters are the only data that the message processors in the `<body>` scope have access to.
+* *Body*: defines a chain of components to be executed just like in a flow.
+* *Output*: declares the output type of your XML SDK. This is the payload's type of the event after being processed by the `<body>`.
+
+The following XML SDK takes two numbers as parameters and has a single operation that sums them together:
+
+[source,xml,linenums]
+----
+<module name="Math XML SDK"...>
+  ...
+  <operation name="sum" doc:description="Takes two numbers and returns the sum of them">
+    <parameters>
+      <parameter name="numberA" type="integer"/>
+      <parameter name="numberB" type="integer"/>
+    </parameters>
+    <body>
+      <mule:set-payload value="#[vars.numberA + vars.numberB]"/>
+    </body>
+    <output type="integer"/>
+  </operation>
+</module>
+----
+
+To invoke this XML SDK from a Mule Application, use it in a flow:
+
+[source,xml,linenums]
+----
+<flow name="mule-flow">
+  <math-smart-connector:sum numberA="10" numberB="5"/>
+  <!-- payload here is 15 -->
+</flow>
+----
+
+.Attributes of *<parameter>*
+[%header,cols="20,20,30,70a"]
+|===
+|Name | Use | Default Value | Description
+
+|name
+|required
+|NA
+|Name of the `<parameter>`
+
+|defaultValue
+|optional
+|NA
+|If used, when invoking the current `<operation>` without any value for this `<parameter>`, it takes the default value.
+
+|use
+|required
+|AUTO
+| Possible values:
+
+* *REQUIRED* parameter must be present. It cannot be *REQUIRED* if the parameter has a defaultValue
+* *OPTIONAL* parameter could be absent
+* *AUTO* defaults at runtime to *REQUIRED* if defaultValue is absent, otherwise marks it as *OPTIONAL*.
+
+|type
+|required
+|NA
+|Defines the type of the `<parameter>`. Use any primitive type such as *string*, *boolean*, *datetime*, *date*, *integer*, *time*, or it can also rely on any type defined in the catalog.
+
+|password
+|optional
+|false
+|Marks the `<parameter>` with `\****` in the UI.
+
+|role
+|required
+|BEHAVIOUR
+|Set of defined roles for a given parameter that modifies the generated XSD for the current `<parameter>`.
+
+* *BEHAVIOUR* renders an attribute.
+* *CONTENT* implies support for DataWeave in place as a child element.
+* *PRIMARY* works similarly to *CONTENT* but maps to the payload by default.
+
+link:https://docs.mulesoft.com/mule-sdk/v/1.1/content-parameters[More info on roles]
+
+|summary
+|optional
+|NA
+|Adds a small tooltip to the `<parameter>`.
+
+|example
+|optional
+|NA
+|Adds a small example of the type of data this parameter should be feed with.
+
+|displayName
+|optional
+|NA
+|Provides a nicer label to the UI, by leaving this attribute empty, the default value will be the `name` attribute hypenized.
+
+|order
+|optional
+|NA
+|Defines an order in how the element should be rendered in the UI.
+
+|tab
+|optional
+|NA
+|Defines to which group (or tab) the `<parameter>` must end in the UI.
+
+|doc:description
+|optional
+|NA
+|Documentation of the current `<parameter>`
+|===
+
+
+.Attributes of *<output>*
+[%header,cols="20,20,30,70a"]
+|===
+|Name | Use | Default Value | Description
+|type
+|optional
+|
+| The type of the output payload data. It can be set to `void` by removing the element, which prevents the `<operation>` call from modifying the Mule event, even if its behavior includes modifying the payload.
+
+|===
+
+Attributes types definition are also supported by `<operation>`s, by adding an extra element `<output-attributes>` (quite similar to the `<output>` element)
+.Attributes of *<output-attributes>*
+[%header,cols="20,20,30,70a"]
+|===
+|Name | Use | Default Value | Description
+|type
+|optional
+|
+| The type of the output attributes data. It can be set to `void` by removing the element, which prevents the `<operation>` call from modifying the Mule event, even if its behavior includes modifying the payload.
+
+|===
+
+Both outputs (`<output>` and `<output-attributes>`) are part of the (new) `MuleMessage` that will be created as soon as the control goes back to the invoker.
+
+=== Properties
+
+////
+should we call them global properties?
+////
+
+A <property> is a field meant to be defined by the user of the XML SDK, that configures it globally for the entire Mule project it's being used in.
+
+These are similar to the parameters exposed by operations, but they act at a level that affects all instances of this XML SDK in the project, instead of just a specific operation. Like the parameters in operations, properties are usually simple types and have default values.
+
+////
+  they are usually simple types to initialize elements of the XML SDK or have default values for every operation.
+
+^ is this all well represented above?
+////
+
+[TIP]
+For the sake of the users of your XML SDK, you should expose just the necessary properties that they might want to edit and nothing else. Don't confuse your users by exposing internal values they can't or shouldn't change.
+
+
+The following XML SDK sends requests to link:https://developer.github.com/v3/users/#get-the-authenticated-user[GitHub API V3] to retrieve an authenticated user:
+
+[source,xml,linenums]
+----
+<module name="Github"  ...>
+  <property name="username" type="string" doc:description="Username credential."/>
+  <property name="password" type="string" password="true" doc:description="Password credential"/>
+
+  <httpn:request-config name="github-httpreq-config" basePath="/">
+    <httpn:request-connection host="api.github.com" protocol="HTTPS" port="443">
+      <httpn:authentication>
+        <httpn:basic-authentication username="#[vars.username]" password="#[vars.password]"/>
+      </httpn:authentication>
+    </httpn:request-connection>
+  </httpn:request-config>
+
+  <operation name="get-user" doc:description="Lists public and private profile information when authenticated.">
+    <body>
+      <httpn:request config-ref="github-httpreq-config" path="#['user/' ++ vars.username]" method="GET"/>
+    </body>
+    <output type="string" doc:description="User information if logged properly."/>
+  </operation>
+</module>
+----
+
+This sample makes use of a `<property>` that is referenced twice in the module where it's defined:
+
+* In a global element (as the value for `http:requester-config`)
+* In an operation (as the value for `config-ref`)
+
+
+The mule application below makes use of this XML SDK:
+
+[source,xml,linenums]
+----
+<mule ...>
+  <github:config name="lautaro-github-config" username="fernandezlautaro" password="****"/>
+  <flow name="test-github-flow">
+    <github:get-user config-ref="lautaro-github-config"/>
+  </flow>
+</mule>
+----
+
+Every execution of the `"test-github-flow"` returns the GitHub information of the authenticated user:
+
+[source,json,linenums]
+----
+{
+  "login": "fernandezlautaro",
+  "id": 4719511,
+  "avatar_url": "https://avatars1.githubusercontent.com/u/4719511?v=3",
+  "gravatar_id": "",
+  "url": "https://api.github.com/users/fernandezlautaro",
+  ...
+}
+----
+
+If the right credentials aren't provided, it returns this error response from GitHub:
+
+[source,json,linenums]
+----
+{
+  "message": "Requires authentication",
+  "documentation_url": "https://developer.github.com/v3"
+}
+----
+
+*<property> attributes*
+[%header,cols="20,20,30,70a"]
+|===
+|Name | Use | Default Value | Description
+
+|name
+|required
+|NA
+|Name of the `<property>`
+
+|defaultValue
+|optional
+|NA
+|If used, when invoking the current `<module>` without any value for this `<property>`, takes the default value.
+
+|use
+|required
+|AUTO
+| Possible values:
+
+* *REQUIRED* property must be present. It cannot be *REQUIRED* if the property has a defaultValue
+* *OPTIONAL* property could be absent
+* *AUTO* defaults at runtime to *REQUIRED* if defaultValue is absent, otherwise marks it as *OPTIONAL*.
+
+|type
+|required
+|NA
+|Defines the type of the `<property>` by using any primitive type such as *string*, *boolean*, *datetime*, *date*, *integer*, *time*, or it can also rely on any type defined in the catalog.
+
+|password
+|optional
+|false
+|Hides the value of the parameter in the UI when typing it (using `\****`).
+
+|summary
+|optional
+|NA
+|Adds a small tooltip to the `<parameter>`.
+
+|example
+|optional
+|NA
+|Adds a small example of the type of data this parameter should be feed with.
+
+|displayName
+|optional
+|NA
+|Provides a nicer label to the UI, by leaving this attribute empty, the default value will be the `name` attribute hypenized.
+
+|order
+|optional
+|NA
+|Defines an order in how the element should be rendered in the UI.
+
+|tab
+|optional
+|NA
+|Defines to which group (or tab) the `<parameter>` must end in the UI.
+
+|doc:description
+|optional
+|NA
+|Documentation of the current `<parameter>`
+|===
+
+
+* *Global Elements*: Mule link:https://docs.mulesoft.com/mule-user-guide/v/3.7/global-elements[Global elements], such as `<http:requester-config ../>`, to delegate connectivity to, allowing the use of any other connector in an XML SDK.
+
+There are cases where several operations need to handle a single state between them. This is the case of a connector that handles session to an external API.
+
+=== Module
+
+The `<module>` element is the root element of the XML SDK, which holds the responsibility of assembling properties and operations into a single package.
+
+*<module> attributes*
+[%header,cols="20,20,30,70a"]
+|===
+|Name | Use | Default Value | Description
+
+|name
+|required
+|NA
+|Name of the `<module>`
+
+|vendor
+|optional
+|"MuleSoft"
+|Vendor of the XML SDK
+
+|prefix
+|optional
+|NA
+|Expected prefix of the module to look for when generating the schemas. If left empty it will create a default one based on the XML SDK's name attribute, by hyphenizing and escaping it.
+
+|namespace
+|optional
+|NA
+|Expected namespace of the module to look for when generating the schemas. If left empty it will default to http://www.mulesoft.org/schema/mule/<prefix>, where `<prefix>` is the attribute prefix attribute value.
+
+|doc:description
+|optional
+|NA
+|Documentation of the current `<parameter>`
+|===
+
+The way of importing the XML SDK schema in a Mule Application is by using the `namespace` attribute, as the XML schemas are dynamically generated. Lets see how `namespace`, `prefix`, and `name` attributes work together.
+
+*<module> provides `name`, `prefix` and `namespace`*
+|===
+|provided values | generated values
+
+|`name="hello with spaces"`
+|`name="hello with spaces"`
+
+|`prefix="hello-prefix"`
+|`prefix="hello-prefix"`
+
+|`namespace="http://www.mulesoft.org/schema/a/different/path/mule/hello"`
+|`namespace="http://www.mulesoft.org/schema/a/different/path/mule/hello"`
+|===
+Generated schema location is `http://www.mulesoft.org/schema/a/different/path/mule/hello/current/mule-hello-prefix.xsd`
+
+*<module> provides `name` and `prefix`*
+|===
+|provided values | generated values
+
+|`name="hello with spaces"`
+|`name="hello with spaces"`
+
+|`prefix="hello-prefix"`
+|`prefix="hello-prefix"`
+
+|NA
+|`namespace=http://www.mulesoft.org/schema/mule/hello-prefix`
+|===
+Generated schema location is `http://www.mulesoft.org/schema/mule/hello-prefix/current/mule-hello-prefix.xsd`
+
+*<module> provides just `name`*
+|===
+|provided values | generated values
+
+|`name="hello with spaces"`
+|`name="hello with spaces"`
+
+|NA
+|`prefix="hello-with-spaces"`
+
+|NA
+|`namespace=http://www.mulesoft.org/schema/mule/hello-with-spaces`
+|===
+Generated schema location is `http://www.mulesoft.org/schema/mule/hello-with-spaces/current/mule-hello-with-spaces.xsd`
+
+The following module only has a `name` attribute `name="hello with spaces"`. This means that its `prefix` is dynamically generated as `hello-with-spaces`, and its `namespace` is dynamically generated as `http://www.mulesoft.org/schema/mule/hello-with-spaces/current/mule-hello-with-spaces.xsd`. This means the Mule Application must have the a schema location pointing at a reference that matches that value.
+
+[source,xml,linenums]
+----
+<module name="hello with spaces"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation=" ... ">
+  <operation name="an-operation" />
+</module>
+----
+
+This component can be used in a Mule application as in the example below.
+
+[source,xml,linenums]
+----
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:hello-with-spaces="http://www.mulesoft.org/schema/mule/hello-with-spaces"
+      xsi:schemaLocation="
+      http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.mulesoft.org/schema/mule/hello-with-spaces http://www.mulesoft.org/schema/mule/hello-with-spaces/current/mule-hello-with-spaces.xsd">
+
+    <flow name="some-flow">
+        <hello-with-spaces:an-operation/>
+    </flow>
+</mule>
+----
+
+== Create and test an XML SDK Project
+In order to be able to create an XML SDK, you need to have Maven previously installed.
+Then, from a command line execute the following:
+[source,json,linenums]
+----
+mvn archetype:generate                                       \
+  -DarchetypeGroupId=org.mule.smart.connector                \
+  -DarchetypeArtifactId=smart-connector-project-archetype    \
+  -DarchetypeVersion=1.0.0                                   \
+  -DgroupId=org.mule.smart.connector                         \
+  -DartifactId=hello-smart-connector                         \
+  -DmuleConnectorName=Hello
+----
+When prompted if the values are correct, press `enter` to continue. This maven archetype will create a stub project with the minimal amount of code to have an XML SDK and a functional test to run it.
+The structure will be something like the following:
+[source,xml,linenums]
+----
+➜  ~ tree hello-smart-connector
+hello-smart-connector
+├── pom.xml
+├── smart-connector
+│   ├── pom.xml
+│   └── src
+│       └── main
+│           └── resources
+│               └── module-Hello.xml // <1>
+└── smart-connector-it
+    ├── mule-application.json
+    ├── pom.xml
+    └── src
+        ├── main
+        │   └── mule
+        │       └── mule-config.xml
+        └── test
+            └── munit
+                └── assertion-munit-test.xml // <2>
+
+10 directories, 7 files
+➜  ~
+----
+The resource (1) `hello-smart-connector/smart-connector/src/main/resources/module-Hello.xml` defines the XML SDK root element and the (2) `hello-smart-connector/smart-connector-it/src/test/munit/assertion-munit-test.xml` an assertion operation that calls the XML SDK operation.
+
+Running `mvn clean install` in the `hello-smart-connector` folder will create the plugin for the `Hello XML SDK` and it will also run the suite through MUnit for the operation defined in the connector.
+[source,xml,linenums]
+----
+➜  hello-smart-connector mvn clean install
+ ...
+ ..
+ .
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO]
+[INFO] Parent POM Hello XML SDK and Mule App integration test SUCCESS [  0.142 s]
+[INFO] Hello XML SDK .............................. SUCCESS [  4.540 s]
+[INFO] Hello XML SDK Mule Application Integration Test SUCCESS [ 33.389 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 39.166 s
+[INFO] Finished at: 2017-06-14T22:07:42-03:00
+[INFO] Final Memory: 61M/928M
+[INFO] ------------------------------------------------------------------------
+➜  hello-smart-connector
+----
+[NOTE]
+Due to small issues with Aether and how MUnit works, building the `hello-smart-connector` might produce a `FAILURE` in the `Hello XML SDK Mule Application Integration Test` project.
+If that happens, then to fix it just run `mvn clean install` from the subfolder `smart-connector-it` rather than the parent `hello-smart-connector` folder.
+
+
+== Relying on other Connectors
+We previously show that it is possible to leverage code into a working connector from an XML SDK, which is quite similar to what happens in a Mule Application.
+In order to properly consume other connector from within an XML SDK is:
+
+*1)* Add the dependency into the XML SDK POM file.
+Lets say a specific connector needs the HTTP Connector and the OAuth module, then it needs to add the following dependencies into the XML SDK:
+[source,xml,linenums]
+----
+<dependencies>
+  <dependency>
+    <groupId>org.mule.connectors</groupId>
+    <artifactId>mule-http-connector</artifactId>
+    <version>0.8.0-SNAPSHOT</version>
+    <classifier>mule-plugin</classifier>
+    <scope>compile</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.mule.modules</groupId>
+    <artifactId>mule-oauth-module</artifactId>
+    <version>0.8.0-SNAPSHOT</version>
+    <classifier>mule-plugin</classifier>
+    <scope>compile</scope>
+  </dependency>
+</dependencies>
+----
+*2)* Add the proper schema location into the `<module>` root element.
+[source,xml,linenums]
+----
+<module name="Hello XML SDK" prefix="module-hello"
+    ...
+    xmlns:httpn="http://www.mulesoft.org/schema/mule/http"
+    xmlns:oauth="http://www.mulesoft.org/schema/mule/oauth"
+    xsi:schemaLocation=" ...
+ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+ http://www.mulesoft.org/schema/mule/oauth http://www.mulesoft.org/schema/mule/oauth/current/mule-oauth.xsd">
+ ...
+  <!-- use of the HTTP and OAuth connector -->
+</module>
+----
+
+== Relying on operations defined in the same module
+There will be scenarios where some operations will have repeated message processors, to which we could rely if they were encapsulated in an new operation and call it from other places.
+All the `<operation>`s defined in a `<module>` could be reused in *that same* `<module>` if they don't have cyclic dependencies.
+Lets assume there's a `<module>` that does some inserts and updates but first validates the input parameters, something like the following module:
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-calling-operations-within-module"
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <operation name="validate-and-insert">
+        <parameters>
+            <parameter name="name" type="string"/>
+        </parameters>
+        <body>
+            <!-- validate the 'name' != null -->
+            <!-- validate the 'name' wasn't already added -->
+            <!-- validate the 'name' matches some criteria -->
+            <!-- validate the 'name' ... and so on -->
+            <db:insert config-ref="dbConfig..">
+                <db:sql>INSERT INTO PLANET(NAME) VALUES (:name)</db:sql>
+                <db:input-parameters>#[{ 'name' : vars.name }]</db:input-parameters>
+            </db:insert>
+        </body>
+    </operation>
+
+    <operation name="validate-and-update">
+        <parameters>
+            <parameter name="originalName" type="string"/>
+            <parameter name="newName" type="string"/>
+        </parameters>
+        <body>
+            <!-- validate the 'newName' and 'originalName' != null -->
+            <!-- validate the 'newName' and 'originalName' wasn't already added -->
+            <!-- validate the 'newName' and 'originalName' matches some criteria -->
+            <!-- validate the 'newName' and 'originalName' ... and so on -->
+            <db:update config-ref="dbConfig..">
+                <db:sql>update PLANET set NAME= :newName where NAME=':originalName'</db:sql>
+                <db:input-parameters>#[{'originalName' : vars.originalName, 'newName' : vars.newName}]</db:input-parameters>
+            </db:update>
+        </body>
+    </operation>
+</module>
+----
+
+Notice how the validations are repeated among the operations `validate-and-insert` and `validate-and-update` (even also within the same `validate-and-update` but with two different parameters) are repeated. That could be improved by adding a third `validate` operation and call it from the ones already defined:
+[source,xml,linenums]
+----
+    <operation name="validate">
+        <parameters>
+            <parameter name="aParameter" type="string"/>
+        </parameters>
+        <body>
+            <!-- validate the 'aParameter' != null -->
+            <!-- validate the 'aParameter' wasn't already added -->
+            <!-- validate the 'aParameter' matches some criteria -->
+            <!-- validate the 'aParameter' ... and so on -->
+        </body>
+    </operation>
+----
+
+In order to properly consume other operations from within a `<module>` the following steps must be done:
+
+*1)* Add a XML namespace `xmlns:tns` (and a new value to the `schemaLocation`) attribute to the `<module>`, which value must map the target namespace of the current module (already explained in the *Module* section).
+*2)* Call the operations by using the `tns` prefix and following by the name of the operation. Notice that the `config-ref` should not be there, as this is a reference to the *same* module, which implies all global instances will be shared among operations.
+
+The complete module will be something like the following:
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-calling-operations-within-module"
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+        xmlns:tns="http://www.mulesoft.org/schema/mule/module-calling-operations-within-module"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+           http://www.mulesoft.org/schema/mule/module-calling-operations-within-module http://www.mulesoft.org/schema/mule/module-calling-operations-within-module/current/mule-module-calling-operations-within-module.xsd">
+
+    <operation name="validate-and-insert">
+        <parameters>
+            <parameter name="name" type="string"/>
+        </parameters>
+        <body>
+            <tns:validate aParameter="#[vars.name]"/>
+            <db:insert config-ref="dbConfig..">
+                <db:sql>INSERT INTO PLANET(NAME) VALUES (:name)</db:sql>
+                <db:input-parameters>#[{ 'name' : vars.name }]</db:input-parameters>
+            </db:insert>
+        </body>
+    </operation>
+
+    <operation name="validate-and-update">
+        <parameters>
+            <parameter name="originalName" type="string"/>
+            <parameter name="newName" type="string"/>
+        </parameters>
+        <body>
+            <tns:validate aParameter="#[vars.originalName]"/>
+            <tns:validate aParameter="#[vars.newName]"/>
+            <db:update config-ref="dbConfig..">
+                <db:sql>update PLANET set NAME= :newName where NAME=':originalName'</db:sql>
+                <db:input-parameters>#[{'originalName' : vars.originalName, 'newName' : vars.newName}]</db:input-parameters>
+            </db:update>
+        </body>
+    </operation>
+
+    <operation name="validate">
+        <parameters>
+            <parameter name="aParameter" type="string"/>
+        </parameters>
+        <body>
+            <!-- validate the 'aParameter' != null -->
+            <!-- validate the 'aParameter' wasn't already added -->
+            <!-- validate the 'aParameter' matches some criteria -->
+            <!-- validate the 'aParameter' ... and so on -->
+        </body>
+    </operation>
+</module>
+----
+
+== Providing Test Connection
+When consuming a connector is really helpful to provide some feedback at design time if the attributes of a global element are feed with wrong values, such as wrong username/password, bad URLs, etc. As everything in a `<module>`, to provide test connection it will rely on the global elements that are being used, which implies that if no global element is used no test connection feature for the current module.
+Let's take a simple example of a `<module name="module-using-file">` that depends on the File connector (which provides test connection), by having the element of `file:connection` the module will pick it up, and it will default its test connectivity to the internal File configuration.
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-file"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:file="http://www.mulesoft.org/schema/mule/file"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+
+    <property name="workingDir" type="string"/>
+    <file:config name="fileConfig">
+        <file:connection workingDir="#[vars.workingDir]"/>
+    </file:config>
+</module>
+----
+From the UI, when doing test connection to the connector `module-using-file`, it will delegate it to the global element encapsulated by `fileConfig`.
+If two, or more, global elements are being used in a `<module>` and provide test connection, while building the connector will show an error to force the developer mark a specific global element as the one to produce the test connection with `xmlns:connection="true"`. In the following connector there are two global elements that support test connection, and because of it the first one was marked for test connectivity by adding the mentioned `xmlns:connection="true"` attribute:
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-file"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:file="http://www.mulesoft.org/schema/mule/file"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+
+    <property name="workingDir" type="string"/>
+
+    <!-- notice how the following global element is marked for test connection -->
+    <file:config name="fileConfig" xmlns:connection="true">
+        <file:connection workingDir="#[vars.workingDir]"/>
+    </file:config>
+
+    <file:config name="anotherFileConfig">
+        <file:connection workingDir="#[vars.workingDir]"/>
+    </file:config>
+</module>
+----
+
+== XML SDK' Catalog
+The provided types for either a `<property>`/`<parameter>` are just some primitive types: *string*, *boolean*, *number*, *date*, *datetime*, *localdatetime*, *time*, *localtime*, *timezone*, *binary*, *any*, *regex*.
+
+There are other scenarios where it is possible to define types much more complex structure than those, to which we provide a way to inject a custom catalog with predefined types. To do so, we will create a file `hello-smart-connector/smart-connector/src/main/resources/module-Hello-catalog.xml` with the following content:
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<catalogs xmlns="http://www.mulesoft.org/schema/mule/types" >
+    <catalog name="PersonXsdType" format="application/xml">
+        <schema format="application/xml+schema" location="./person-schema.xsd" />
+    </catalog>
+    <catalog name="PersonJsonType" format="application/json">
+        <schema format="application/json+schema" location="./person-schema.json" />
+    </catalog>
+</catalogs>
+----
+Under `hello-smart-connector/smart-connector/src/main/resources/` we will also create two more files. The `hello-smart-connector/smart-connector/src/main/resources/person-schema.xsd` (same name defined in the catalog) with the following content:
+[source,xml,linenums]
+----
+<xs:schema targetNamespace="http://uri" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Person">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element type="xs:string" name="name"/>
+        <xs:element type="xs:string" name="lastName"/>
+        <xs:element type="xs:integer" name="age"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+----
+The `hello-smart-connector/smart-connector/src/main/resources/person-schema.json` (same name defined in the catalog) with the following content:
+[source,json,linenums]
+----
+{
+  "type": "object",
+  "properties": {
+    "age": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "lastname": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}
+----
+The structure of the `tree hello-smart-connector/smart-connector` folder will be as follow:
+[source,json,linenums]
+----
+➜  ~ tree hello-smart-connector/smart-connector
+hello-smart-connector/smart-connector
+├── pom.xml
+└── src
+    └── main
+        └── resources
+            ├── module-Hello-catalog.xml
+            ├── module-Hello.xml
+            ├── person-schema.json
+            └── person-schema.xsd
+----
+Once placed, we can start leveraging `type`s to the defined ones in the catalog as well as the primitive ones (*string*, *integer*, *boolean*, etc.), which in this scenario are `PersonXsdType` and `PersonJsonType` by just adding an operations such as:
+[source,xml,linenums]
+----
+<module name="Hello XML SDK" prefix="module-hello" ... >
+  ...
+  <operation name="person-xml-to-json" doc:description="Takes a Person in XML format and translates it to JSON">
+    <parameters>
+      <parameter name="content" type="PersonXsdType::{http://uri}Person"/>
+    </parameters>
+    <body>
+      <ee:transform>
+        <ee:set-payload><![CDATA[
+          %dw 2.0
+          %output application/json encoding='UTF-8'
+          ---
+          {
+            "name" : vars.content.person.name,
+            "lastname" : vars.content.person.lastName,
+            "age" : vars.content.person.age as Number
+          }
+          ]]></ee:set-payload>
+      </ee:transform>
+    </body>
+    <output type="PersonJsonType"/>
+  </operation>
+  <operation name="person-json-to-xml" doc:description="Takes a Person in JSON format and translates it to XML">
+    <parameters>
+      <parameter name="content" type="PersonJsonType"/>
+    </parameters>
+    <body>
+      <ee:transform>
+        <ee:set-payload><![CDATA[
+          %dw 2.0
+          %output application/xml
+          ---
+          person : vars.content
+          ]]></ee:set-payload>
+      </ee:transform>
+    </body>
+    <output type="PersonXsdType::{http://uri}Person"/>
+    </operation>
+<module/>
+----
+Notice that when using the JSON schema from the catalog, the value of `type` is the name of it (`PersonJsonType`), but when using the XML schema we need to append two colons `::` to it and the qname reference to the element, which in this particular case happens to be `{http://uri}Person`, ending in `PersonXsdType::{http://uri}Person`.
+
+To use DataWeave we would also need to add an extra dependency to our XML SDK, so that when reading the `<ee:transform ..>` the mandatory schema (`mule-ee.xsd`) can be found:
+[source,xml,linenums]
+----
+<dependency>
+    <groupId>com.mulesoft.mule.runtime.modules</groupId>
+    <artifactId>mule-module-spring-config-ee</artifactId>
+    <version>${mule.version}</version>
+    <scope>provided</scope>
+</dependency>
+----
+To use the above operations, we would need to properly feed the values and execute them as follow:
+[source,xml,linenums]
+----
+<mule ...>
+  <flow name="person-xml-2-json-flow">
+    <!-- create a XML Person and store it in the payload -->
+    <ee:transform>
+      <ee:set-payload><![CDATA[
+        %dw 2.0
+        %output application/xml
+        ---
+        person : {
+          name : "Lautaro",
+          lastName: "Fernandez",
+          age : 54
+        }
+        ]]></ee:set-payload>
+    </ee:transform>
+    <!-- call the operation -->
+    <module-hello:person-xml-to-json content="#[payload]"/>
+    <!-- at this point, the payload is a JSON Person -->
+  </flow>
+
+  <flow name="person-json-2-xml-flow">
+    <!-- create a JSON Person and store it in the payload -->
+    <ee:transform>
+      <ee:set-payload><![CDATA[
+        %dw 2.0
+        %output application/json
+        ---
+        {
+          name : "Lautaro",
+          lastName: "Fernandez",
+          age : 54
+        }
+        ]]></ee:set-payload>
+    </ee:transform>
+    <!-- call the operation -->
+    <module-hello:person-json-to-xml content="#[payload]"/>
+    <!-- at this point, the payload is a XML Person -->
+  </flow>
+</mule>
+----
+It might be common that for parameterizing values that are not primitive types, the defined `<operation>` declare them as `role="CONTENT"` so that it won't be mandatory to use an extra processor in the `<flow>` to call the operation. Taking the `person-xml-to-json` operation, we will add the extra attribute to the `content` parameter:
+[source,xml,linenums]
+----
+<module name="Hello XML SDK" prefix="module-hello" ... >
+  ...
+  <operation name="person-xml-to-json" doc:description="Takes a Person in XML format and translates it to JSON">
+    <parameters>
+      <parameter name="content" type="PersonXsdType::{http://uri}Person" role="CONTENT"/>
+    </parameters>
+    <body>
+      <ee:transform>
+        <ee:set-payload><![CDATA[
+          %dw 2.0
+          %output application/json encoding='UTF-8'
+          ---
+          {
+            "name" : vars.content.person.name,
+            "lastname" : vars.content.person.lastName,
+            "age" : vars.content.person.age as Number
+          }
+          ]]></ee:set-payload>
+      </ee:transform>
+    </body>
+    <output type="PersonJsonType"/>
+  </operation>
+  ...
+<module/>
+----
+To use the above operations, we would need to properly feed the values and execute them as follow:
+[source,xml,linenums]
+----
+<mule ...>
+  <flow name="person-xml-2-json-using-content-flow">
+    <!-- call the operation -->
+    <module-hello:person-xml-to-json>
+      </module-hello:content><![CDATA[
+        %dw 2.0
+        %output application/xml
+        ---
+        person : {
+          name : "Lautaro",
+          lastName: "Fernandez",
+          age : 54
+        }]]>
+      </module-hello:content>
+    </module-hello:person-xml-to-json>
+    <!-- at this point, the payload is a JSON Person -->
+  </flow>
+  ..
+</mule>
+----
+
+== XML SDK' Working Samples
+In *https://github.com/mulesoft-labs/smart-connectors-integration-tests* there are more samples with different types of XML SDK (depending on DataWeave, HTTP Connector, File Connector, Validation Module, etc.) with some Mule Applications that depend on them:
+
+=== Using Core Components
+Location `link:https://github.com/mulesoft-labs/smart-connectors-integration-tests/tree/master/smart-connectors/smart-connector-using-core[smart-connectors/smart-connector-using-core]`: depends on just core components, e.g.: `mule:set-payload`
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-core"
+        doc:description="This module relies entirely in runtime provided components (no other Plugin dependencies)"
+
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+        xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <operation name="set-payload-hardcoded" doc:description="Sets the payload to the String value 'Wubba Lubba Dub Dub'">
+        <body>
+            <mule:set-payload value="Wubba Lubba Dub Dub"/>
+        </body>
+        <output type="string" doc:description="Payload's output"/>
+    </operation>
+
+    <operation name="set-payload-hardcoded-two-times" doc:description="Sets the payload to the String value 'Wubba Lubba Dub Dub'">
+        <body>
+            <mule:set-payload value="Wubba Lubba Dub Dub"/>
+            <mule:set-payload value="#[payload ++ 'Dub Dub']"/>
+        </body>
+        <output type="string" doc:description="Payload's output"/>
+    </operation>
+
+ </module>
+----
+=== Using JSON custom types
+Location `link:https://github.com/mulesoft-labs/smart-connectors-integration-tests/tree/master/smart-connectors/smart-connector-using-custom-types-json[smart-connectors/smart-connector-using-custom-types-json]`: depends on JSON types
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-custom-types-json"
+        doc:description="This module relies entirely in runtime provided components (no other Plugin dependencies)"
+
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+        xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <operation name="set-payload-hardcoded" doc:description="Sets the payload to the String value 'Wubba Lubba Dub Dub'">
+        <body>
+            <mule:set-payload value="Wubba Lubba Dub Dub"/>
+        </body>
+        <output type="a-custom-type" doc:description="Payload's output"/>
+    </operation>
+ </module>
+----
+Catalog
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<catalogs xmlns="http://www.mulesoft.org/schema/mule/types" >
+    <catalog name="a-custom-type" format="application/json">
+        <schema format="application/json+schema" location="./a-custom-type-schema.json" />
+    </catalog>
+</catalogs>
+----
+Schema
+[source,xml,linenums]
+----
+{
+  "type": "object",
+  "properties": {
+    "number": {
+      "type": "number"
+    },
+    "street_name": {
+      "type": "string"
+    },
+    "street_type": {
+      "type": "string",
+      "enum": [
+        "Street",
+        "Avenue",
+        "Boulevard"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
+----
+=== Using XML custom types
+Location `link:https://github.com/mulesoft-labs/smart-connectors-integration-tests/tree/master/smart-connectors/smart-connector-using-custom-types-xsd[smart-connectors/smart-connector-using-custom-types-xsd]`: depends on XML types
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-custom-types-xsd"
+        doc:description="This module relies entirely in runtime provided components (no other Plugin dependencies)"
+
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+        xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <operation name="operation-with-custom-types">
+        <parameters>
+            <parameter name="value" type="XsdType1::Root"/>
+        </parameters>
+        <body>
+            <mule:set-payload value="hello world!"/>
+        </body>
+        <output type="string"/>
+    </operation>
+
+ </module>
+----
+Catalog
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<catalogs xmlns="http://www.mulesoft.org/schema/mule/types" >
+    <catalog name="XsdType1" format="application/xml">
+        <schema format="application/xml+schema" location="./type1-schema.xsd" />
+    </catalog>
+</catalogs>
+----
+Schema 1
+[source,xml,linenums]
+----
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="Root">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    A user with all the information
+                </xs:documentation>
+            </xs:annotation>
+            <xs:sequence>
+                <xs:element type="xs:string" name="name"/>
+                <xs:element type="xs:string" name="lastName"/>
+                <xs:element type="xs:boolean" name="male"/>
+                <xs:element type="xs:integer" name="age"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+----
+=== Using DataWeave
+Location `link:https://github.com/mulesoft-labs/smart-connectors-integration-tests/tree/master/smart-connectors/smart-connector-using-dw[smart-connectors/smart-connector-using-dw]`: depends on DataWeave, e.g.: `ee:transform`
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-dw"
+        doc:description="This module relies entirely in runtime provided components (no other Plugin dependencies) and DW"
+
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+        xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+        xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+           http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+    <operation name="set-payload-through-dw" doc:description="Sets the payload to the String value 'Wubba Lubba Dub Dub'">
+        <body>
+            <ee:transform>
+                <ee:set-payload><![CDATA[
+                    %dw 2.0
+                    %output application/json encoding='UTF-8'
+                    ---
+                    'Wubba Lubba Dub Dub'
+            ]]></ee:set-payload>
+            </ee:transform>
+        </body>
+        <output type="string" doc:description="Payload's output"/>
+    </operation>
+ </module>
+----
+=== Using File Connector
+Location `link:https://github.com/mulesoft-labs/smart-connectors-integration-tests/tree/master/smart-connectors/smart-connector-using-file[smart-connectors/smart-connector-using-file]`: depends on File Connector, e.g.: `file:list`
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-file"
+
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:file="http://www.mulesoft.org/schema/mule/file"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+
+    <property name="workingDir" type="string"/>
+    <property name="filenamePattern" type="string"/>
+
+    <file:config name="file">
+        <file:connection workingDir="#[vars.workingDir]"/>
+    </file:config>
+    <file:matcher name="globalMatcher" directories="REQUIRE" filenamePattern="#[vars.filenamePattern]" />
+
+    <operation name="list">
+        <parameters>
+            <parameter name="path" type="string"/>
+        </parameters>
+        <body>
+            <file:list directoryPath="#[vars.path]" config-ref="file" matcher="globalMatcher"/>
+        </body>
+        <output type="string"/>
+    </operation>
+
+ </module>
+----
+=== Using HTTP Connector
+Location `link:https://github.com/mulesoft-labs/smart-connectors-integration-tests/tree/master/smart-connectors/smart-connector-using-http[smart-connectors/smart-connector-using-http]`: depends on HTTP Connector, e.g.: `http:requester`
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-http"
+
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+        xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+        xmlns:httpn="http://www.mulesoft.org/schema/mule/http"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+           http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <property name="username" type="string" doc:description="the login user credential."/>
+    <property name="password" type="string" password="true" doc:description="the login password credential"/>
+
+    <httpn:request-config name="github-httpreq-config" basePath="/">
+        <httpn:request-connection host="api.github.com" protocol="HTTPS" port="443">
+            <httpn:authentication>
+                <httpn:basic-authentication username="#[vars.username]" password="#[vars.password]"/>
+            </httpn:authentication>
+        </httpn:request-connection>
+    </httpn:request-config>
+
+    <operation name="search-issues" doc:description="Get a list of Issue objects that match the specified filter data">
+        <parameters>
+            <parameter name="repo" type="string" doc:description="the repository name"/>
+            <parameter name="since" type="string" defaultValue="2017-02-06T09:29:49Z" doc:description="date from which restoring issues, sample: 2016-07-31T12:37:07Z"/>
+        </parameters>
+        <body>
+            <mule:logger level="ERROR" doc:name="Logger" message="#['repo:[' ++ vars.repo + '], since:[' + vars.since ++']']" />
+            <httpn:request config-ref="github-httpreq-config" path="search/issues" method="GET" >
+                <httpn:query-params>
+                    #[{q : 'repo: $(vars.repo) created:>=$(vars.since)', type: 'Issues'}]
+                </httpn:query-params>
+            </httpn:request>
+            <mule:set-payload value="#[payload]" mimeType="application/json" />
+        </body>
+        <output type="string" doc:description="List of issues"/>
+    </operation>
+
+ </module>
+----
+=== Using other XML SDK
+Location `link:https://github.com/mulesoft-labs/smart-connectors-integration-tests/tree/master/smart-connectors/smart-connector-using-smart-connector[smart-connectors/smart-connector-using-smart-connector]`: depends on another XML SDK (particularly, it relies on the first one of this set of samples)
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-smart-connector"
+
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:module-using-core="http://www.mulesoft.org/schema/mule/module-using-core"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/module-using-core http://www.mulesoft.org/schema/mule/module-using-core/current/module-using-core.xsd">
+
+    <operation name="proxy-set-payload-hardcoded">
+        <body>
+            <module-using-core:set-payload-hardcoded/>
+        </body>
+        <output type="string"/>
+    </operation>
+
+ </module>
+----
+=== Using Validation Module
+Location `link:https://github.com/mulesoft-labs/smart-connectors-integration-tests/tree/master/smart-connectors/smart-connector-using-validation[smart-connectors/smart-connector-using-validation]`: depends on Validation Module, e.g.: `validation:is-email`
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-validation"
+
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+
+    <operation name="is-really-email">
+        <parameters>
+            <parameter name="inputEmail" type="string"/>
+        </parameters>
+        <body>
+            <validation:is-email email="#[vars.inputEmail]"/>
+        </body>
+        <output type="boolean"/>
+    </operation>
+
+ </module>
+----
+
+== XML SDK limitations
+The following items are limitations that might be supported in a future, but they are not planned:
+
+* Support inbound operations. XML SDK will only provide outbound operations, not sources (aka:`<scheduler>`), neither routers.
+* Operations will not support recursive calls.
+
+== See Also
+???
