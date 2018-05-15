@@ -737,7 +737,7 @@ If two, or more, global elements are being used in a `<module>` and provide test
 
 == Handling errors
 In some cases operations within the `<body>` will thrown error codes that should not be propagated as is, in which case they must be remapped to something more meaningful, while other scenarios might be preconditions inside the `<operation>`.
-To handle the further XML SDK will rely on link:https://docs.mulesoft.com/mule4-user-guide/v/4.1/mule-error-concept#about-error-mappings[error mappings] and to the further with the link:https://docs.mulesoft.com/mule4-user-guide/v/4.1/raise-error-component-reference[raise error component].
+To handle the former, XML SDK relies on link:https://docs.mulesoft.com/mule4-user-guide/v/4.1/mule-error-concept#about-error-mappings[error mappings], while for the latter, the link:https://docs.mulesoft.com/mule4-user-guide/v/4.1/raise-error-component-reference[raise error component] is used.
 
 Let's see a sample of doing an error mapping in an operation that divides two numbers
 [source,xml,linenums]
