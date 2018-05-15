@@ -13,4 +13,12 @@
 	<flow name="set-payload-hardcoded-two-times-flow">
 		<module-using-core:set-payload-hardcoded-two-times/>
 	</flow>
+
+	<flow name="fail-raise-error-flow">
+		<module-using-core:fail-raise-error customError="#[vars.custom]"/>
+	</flow>
+
+	<flow name="fail-raise-error-with-mapping-flow">
+		<module-using-core:fail-raise-error-with-mapping customErrorMapping="#[vars.custom]"/>
+	</flow>
 </mule>

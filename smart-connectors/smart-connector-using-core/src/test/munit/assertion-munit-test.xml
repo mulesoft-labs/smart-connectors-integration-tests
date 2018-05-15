@@ -14,29 +14,45 @@
 
     <munit:config name="assertion-test.xml"/>
 
-    <munit:test name="test-set-payload-hardcoded-flow" description="">
+    <munit:test name="test-set-payload-hardcoded" description="">
         <munit:execution>
-            <flow-ref name="set-payload-hardcoded-flow" />
+            <module-using-core:set-payload-hardcoded/>
         </munit:execution>
         <munit:validation>
             <munitext:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Wubba Lubba Dub Dub')]" message="Oops this should have been true"/>
         </munit:validation>
     </munit:test>
 
-    <munit:test name="test-set-payload-hardcoded-two-times-flow" description="">
+    <munit:test name="test-set-payload-hardcoded-two-times" description="">
         <munit:execution>
-            <flow-ref name="set-payload-hardcoded-two-times-flow"/>
+            <module-using-core:set-payload-hardcoded-two-times/>
         </munit:execution>
         <munit:validation>
             <munitext:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Wubba Lubba Dub Dub Dub Dub')]" message="Oops this should have been true"/>
         </munit:validation>
     </munit:test>
 
-    <flow name="set-payload-hardcoded-flow">
-        <module-using-core:set-payload-hardcoded/>
-    </flow>
+    <munit:test name="test-fail-raise-error-custom-true" description="" expectedErrorType="MODULE-USING-CORE:XML_SDK_CUSTOM_ERROR">
+        <munit:execution>
+            <module-using-core:fail-raise-error customError="true"/>
+        </munit:execution>
+    </munit:test>
 
-    <flow name="set-payload-hardcoded-two-times-flow">
-        <module-using-core:set-payload-hardcoded-two-times/>
-    </flow>
+    <munit:test name="test-fail-raise-error-custom-false" description="" expectedErrorType="MULE:CONNECTIVITY">
+        <munit:execution>
+            <module-using-core:fail-raise-error customError="false"/>
+        </munit:execution>
+    </munit:test>
+
+    <munit:test name="test-fail-raise-error-with-mapping-true" description="" expectedErrorType="MODULE-USING-CORE:XML_SDK_CUSTOM_ERROR_REMAPPED">
+        <munit:execution>
+            <module-using-core:fail-raise-error-with-mapping customErrorMapping="true"/>
+        </munit:execution>
+    </munit:test>
+
+    <munit:test name="test-fail-raise-error-with-mapping-false" description="" expectedErrorType="MULE:SECURITY">
+        <munit:execution>
+            <module-using-core:fail-raise-error-with-mapping customErrorMapping="false"/>
+        </munit:execution>
+    </munit:test>
 </mule>

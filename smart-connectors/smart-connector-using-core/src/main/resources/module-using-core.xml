@@ -27,4 +27,39 @@
         <output type="string" doc:description="Payload's output"/>
     </operation>
 
+    <operation name="fail-raise-error">
+        <parameters>
+            <parameter name="customError" type="boolean" defaultValue="true"/>
+        </parameters>
+        <body>
+            <mule:choice>
+                <mule:when expression="#[vars.customError]">
+                    <mule:raise-error type="MODULE-USING-CORE:XML_SDK_CUSTOM_ERROR" description="A custom error occurred in the module."/>
+                </mule:when>
+                <mule:otherwise>
+                    <mule:raise-error type="CONNECTIVITY" description="#['A module error ' ++ 'occurred.']"/>
+                </mule:otherwise>
+            </mule:choice>
+        </body>
+        <output type="string"/>
+        <errors>
+            <error type="XML_SDK_CUSTOM_ERROR"/>
+        </errors>
+    </operation>
+
+    <operation name="fail-raise-error-with-mapping">
+        <parameters>
+            <parameter name="customErrorMapping" type="boolean" defaultValue="true"/>
+        </parameters>
+        <body>
+            <tns:fail-raise-error customError="#[vars.customErrorMapping]">
+                <mule:error-mapping targetType="MODULE-USING-CORE:XML_SDK_CUSTOM_ERROR_REMAPPED" sourceType="MODULE-USING-CORE:XML_SDK_CUSTOM_ERROR"/>
+                <mule:error-mapping targetType="SECURITY" sourceType="CONNECTIVITY"/>
+            </tns:fail-raise-error>
+        </body>
+        <output type="string"/>
+        <errors>
+            <error type="XML_SDK_CUSTOM_ERROR_REMAPPED"/>
+        </errors>
+    </operation>
  </module>

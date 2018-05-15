@@ -28,4 +28,32 @@
             <munitext:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Wubba Lubba Dub Dub Dub Dub')]" message="Oops this should have been true"/>
         </munit:validation>
     </munit:test>
+
+    <munit:test name="test-fail-raise-error-custom-true" description="" expectedErrorType="MODULE-USING-CORE:XML_SDK_CUSTOM_ERROR">
+        <munit:execution>
+            <set-variable variableName="custom" value="#[true]"/>
+            <flow-ref name="fail-raise-error-flow"/>
+        </munit:execution>
+    </munit:test>
+
+    <munit:test name="test-fail-raise-error-custom-false" description="" expectedErrorType="MULE:CONNECTIVITY">
+        <munit:execution>
+            <set-variable variableName="custom" value="#[false]"/>
+            <flow-ref name="fail-raise-error-flow"/>
+        </munit:execution>
+    </munit:test>
+
+    <munit:test name="test-fail-raise-error-with-mapping-true" description="" expectedErrorType="MODULE-USING-CORE:XML_SDK_CUSTOM_ERROR_REMAPPED">
+        <munit:execution>
+            <set-variable variableName="custom" value="#[true]"/>
+            <flow-ref name="fail-raise-error-with-mapping-flow"/>
+        </munit:execution>
+    </munit:test>
+
+    <munit:test name="test-fail-raise-error-with-mapping-false" description="" expectedErrorType="MULE:SECURITY">
+        <munit:execution>
+            <set-variable variableName="custom" value="#[false]"/>
+            <flow-ref name="fail-raise-error-with-mapping-flow"/>
+        </munit:execution>
+    </munit:test>
 </mule>
