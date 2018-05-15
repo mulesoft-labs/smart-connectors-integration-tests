@@ -55,7 +55,7 @@ An `<operation>`, similar to a function, is a prescriptive way of defining a set
 Keep in mind that these parameters are the only data that the message processors in the `<body>` scope have access to.
 * *Body*: defines a chain of components to be executed just like in a flow.
 * *Output*: declares the output type of your XML SDK. This is the payload's type of the event after being processed by the `<body>`.
-
+* *Errors*: declares the errors types the XML SDK might raise (or map) within the `<body>`.
 The following XML SDK takes two numbers as parameters and has a single operation that sums them together:
 
 [source,xml,linenums]
@@ -64,13 +64,13 @@ The following XML SDK takes two numbers as parameters and has a single operation
   ...
   <operation name="sum" doc:description="Takes two numbers and returns the sum of them">
     <parameters>
-      <parameter name="numberA" type="integer"/>
-      <parameter name="numberB" type="integer"/>
+      <parameter name="numberA" type="number"/>
+      <parameter name="numberB" type="number"/>
     </parameters>
     <body>
       <mule:set-payload value="#[vars.numberA + vars.numberB]"/>
     </body>
-    <output type="integer"/>
+    <output type="number"/>
   </operation>
 </module>
 ----
@@ -112,7 +112,7 @@ To invoke this XML SDK from a Mule Application, use it in a flow:
 |type
 |required
 |NA
-|Defines the type of the `<parameter>`. Use any primitive type such as *string*, *boolean*, *datetime*, *date*, *integer*, *time*, or it can also rely on any type defined in the catalog.
+|Defines the type of the `<parameter>`. Use any primitive type such as *string*, *boolean*, *datetime*, *date*, *number*, *time*, or it can also rely on any type defined in the catalog.
 
 |password
 |optional
@@ -187,21 +187,22 @@ Attributes types definition are also supported by `<operation>`s, by adding an e
 
 Both outputs (`<output>` and `<output-attributes>`) are part of the (new) `MuleMessage` that will be created as soon as the control goes back to the invoker.
 
-=== Properties
+.Attributes of *<error>*
+[%header,cols="20,20,30,70a"]
+|===
+|Name | Use | Default Value | Description
+|type
+|required
+|
+|The code of the error that might be thrown (or remapped) in the `<body>`. More info about link:https://docs.mulesoft.com/mule4-user-guide/v/4.1/mule-error-concept[Mule Error concept].
 
-////
-should we call them global properties?
-////
+|===
+
+=== Properties
 
 A <property> is a field meant to be defined by the user of the XML SDK, that configures it globally for the entire Mule project it's being used in.
 
 These are similar to the parameters exposed by operations, but they act at a level that affects all instances of this XML SDK in the project, instead of just a specific operation. Like the parameters in operations, properties are usually simple types and have default values.
-
-////
-  they are usually simple types to initialize elements of the XML SDK or have default values for every operation.
-
-^ is this all well represented above?
-////
 
 [TIP]
 For the sake of the users of your XML SDK, you should expose just the necessary properties that they might want to edit and nothing else. Don't confuse your users by exposing internal values they can't or shouldn't change.
@@ -301,7 +302,7 @@ If the right credentials aren't provided, it returns this error response from Gi
 |type
 |required
 |NA
-|Defines the type of the `<property>` by using any primitive type such as *string*, *boolean*, *datetime*, *date*, *integer*, *time*, or it can also rely on any type defined in the catalog.
+|Defines the type of the `<property>` by using any primitive type such as *string*, *boolean*, *datetime*, *date*, *number*, *time*, or it can also rely on any type defined in the catalog.
 
 |password
 |optional
@@ -731,6 +732,79 @@ If two, or more, global elements are being used in a `<module>` and provide test
     <file:config name="anotherFileConfig">
         <file:connection workingDir="#[vars.workingDir]"/>
     </file:config>
+</module>
+----
+
+== Handling errors
+In some cases operations within the `<body>` will thrown error codes that should not be propagated as is, in which case they must be remapped to something more meaningful, while other scenarios might be preconditions inside the `<operation>`.
+To handle the further XML SDK will rely on link:https://docs.mulesoft.com/mule4-user-guide/v/4.1/mule-error-concept#about-error-mappings[error mappings] and to the further with the link:https://docs.mulesoft.com/mule4-user-guide/v/4.1/raise-error-component-reference[raise error component].
+
+Let's see a sample of doing an error mapping in an operation that divides two numbers
+[source,xml,linenums]
+----
+<module name="Math XML SDK"...>
+  ...
+  <operation name="div" doc:description="Takes two numbers and returns the division of them">
+    <parameters>
+      <parameter name="numberA" type="number"/>
+      <parameter name="numberB" type="number"/>
+    </parameters>
+    <body>
+      <mule:set-payload value="#[vars.numberA / vars.numberB]"/>
+    </body>
+    <output type="number"/>
+  </operation>
+</module>
+----
+If the divisor `numberB` is zero, the `div` operation will end up in a runtime error with the `MULE:EXPRESSION` which message will be `Division by zero`, propagating the `MULE:EXPRESSION` won't fit in a `Math XML SDK` module as it's not specific enough.
+
+
+Taking the previous explanation, we will rely on the *error mapping* feature to handle the native runtime `MULE:EXPRESSION` error to deliver a custom error so that the result of calling the `div` operation ends up in a `MATH-XML-SDK:DIVISION_BY_ZERO`:
+[source,xml,linenums]
+----
+<module name="Math XML SDK"...>
+  ...
+  <operation name="div" doc:description="Takes two numbers and returns the division of them">
+    <parameters>
+      <parameter name="numberA" type="number"/>
+      <parameter name="numberB" type="number"/>
+    </parameters>
+    <body>
+      <mule:set-payload value="#[vars.numberA / vars.numberB]">
+        <mule:error-mapping targetType="DIVISION_BY_ZERO" sourceType="MULE:EXPRESSION"/>
+      </mule:set-payload>
+    </body>
+    <output type="number"/>
+  </operation>
+  <errors>
+    <error type="DIVISION_BY_ZERO"/>
+  </errors>
+</module>
+----
+
+The same error could be achieved by executing a validation before the evaluation of the expression `#[vars.numberA / vars.numberB]`, in which if it will fail by raising a new error `MATH-XML-SDK:DIVISION_BY_ZERO` as follow:
+[source,xml,linenums]
+----
+<module name="Math XML SDK"...>
+  ...
+  <operation name="div" doc:description="Takes two numbers and returns the division of them">
+    <parameters>
+      <parameter name="numberA" type="number"/>
+      <parameter name="numberB" type="number"/>
+    </parameters>
+    <body>
+      <mule:choice>
+        <mule:when expression="#[vars.customError]">
+          <mule:raise-error type="MATH-XML-SDK:DIVISION_BY_ZERO" description="Division by zero"/>
+        </mule:when>
+      </mule:choice>
+      <mule:set-payload value="#[vars.numberA / vars.numberB]" />
+    </body>
+    <output type="number"/>
+  </operation>
+  <errors>
+    <error type="DIVISION_BY_ZERO"/>
+  </errors>
 </module>
 ----
 
