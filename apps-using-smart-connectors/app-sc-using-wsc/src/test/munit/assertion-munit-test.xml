@@ -20,121 +20,70 @@
 
     <module-using-wsc:config name="scWSC" address="http://localhost:${a.dynamic.port}/TicketServiceService/TicketServicePort"/>
 
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
+    <munit:test name="test-get-all-flights-flow" description="">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="api-main"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <module-using-wsc:get-all-flights config-ref="scWSC"/>
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- payload.listAllFlightsResponse]" is="#[MunitTools::notNullValue()]" message="Oops this should have been true"/>
+            <munitext:assert-that expression="#[output application/java --- sizeOf(payload.listAllFlightsResponse)]" is="#[MunitTools::equalTo(2)]" message="Oops this should have been true"/>
+            <!--asserting SFO response-->
+            <set-variable variableName="actual" value="#[output application/java --- payload.listAllFlightsResponse[0]]"/>
+            <flow-ref name="assert-sfo"/>
+            <!--asserting EZE response-->
+            <set-variable variableName="actual" value="#[output application/java --- payload.listAllFlightsResponse[1]]"/>
+            <flow-ref name="assert-eze"/>
+        </munit:validation>
+    </munit:test>
 
-    <!--<munit:test name="test-get-all-flights-flow" description="">-->
-        <!--<munit:enable-flow-sources>-->
-            <!--<munit:enable-flow-source value="api-main"/>-->
-        <!--</munit:enable-flow-sources>-->
-        <!--<munit:execution>-->
-            <!--<module-using-wsc:get-all-flights config-ref="scWSC"/>-->
-        <!--</munit:execution>-->
-        <!--<munit:validation>-->
-            <!--<munitext:assert-that expression="#[output application/java -&#45;&#45; payload.listAllFlightsResponse]" is="#[MunitTools::notNullValue()]" message="Oops this should have been true"/>-->
-            <!--<munitext:assert-that expression="#[output application/java -&#45;&#45; sizeOf(payload.listAllFlightsResponse)]" is="#[MunitTools::equalTo(2)]" message="Oops this should have been true"/>-->
-            <!--&lt;!&ndash;asserting SFO response&ndash;&gt;-->
-            <!--<set-variable variableName="actual" value="#[output application/java -&#45;&#45; payload.listAllFlightsResponse[0]]"/>-->
-            <!--<flow-ref name="assert-sfo"/>-->
-            <!--&lt;!&ndash;asserting EZE response&ndash;&gt;-->
-            <!--<set-variable variableName="actual" value="#[output application/java -&#45;&#45; payload.listAllFlightsResponse[1]]"/>-->
-            <!--<flow-ref name="assert-eze"/>-->
-        <!--</munit:validation>-->
-    <!--</munit:test>-->
+    <munit:test name="test-get-flight-for-SFO-flow" description="">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="api-main"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <module-using-wsc:get-flight config-ref="scWSC" aDestination="SFO"/>
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- payload.findFlightResponse]" is="#[MunitTools::notNullValue()]" message="Oops this should have been true"/>
+            <munitext:assert-that expression="#[output application/java --- sizeOf(payload.findFlightResponse)]" is="#[MunitTools::equalTo(1)]" message="Oops this should have been true"/>
+            <!--asserting SFO response-->
+            <set-variable variableName="actual" value="#[output application/java --- payload.findFlightResponse.return]"/>
+            <flow-ref name="assert-sfo"/>
+        </munit:validation>
+    </munit:test>
 
-    <!--<munit:test name="test-get-flight-for-SFO-flow" description="">-->
-        <!--<munit:enable-flow-sources>-->
-            <!--<munit:enable-flow-source value="api-main"/>-->
-        <!--</munit:enable-flow-sources>-->
-        <!--<munit:execution>-->
-            <!--<module-using-wsc:get-flight config-ref="scWSC" aDestination="SFO"/>-->
-        <!--</munit:execution>-->
-        <!--<munit:validation>-->
-            <!--<munitext:assert-that expression="#[output application/java -&#45;&#45; payload.findFlightResponse]" is="#[MunitTools::notNullValue()]" message="Oops this should have been true"/>-->
-            <!--<munitext:assert-that expression="#[output application/java -&#45;&#45; sizeOf(payload.findFlightResponse)]" is="#[MunitTools::equalTo(1)]" message="Oops this should have been true"/>-->
-            <!--&lt;!&ndash;asserting SFO response&ndash;&gt;-->
-            <!--<set-variable variableName="actual" value="#[output application/java -&#45;&#45; payload.findFlightResponse.return]"/>-->
-            <!--<flow-ref name="assert-sfo"/>-->
-        <!--</munit:validation>-->
-    <!--</munit:test>-->
+    <munit:test name="test-get-flight-for-EZE-flow" description="">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="api-main"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <module-using-wsc:get-flight config-ref="scWSC" aDestination="EZE"/>
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- payload.findFlightResponse]" is="#[MunitTools::notNullValue()]" message="Oops this should have been true"/>
+            <munitext:assert-that expression="#[output application/java --- sizeOf(payload.findFlightResponse)]" is="#[MunitTools::equalTo(1)]" message="Oops this should have been true"/>
+            <!--asserting EZE response-->
+            <set-variable variableName="actual" value="#[output application/java --- payload.findFlightResponse.return]"/>
+            <flow-ref name="assert-eze"/>
+        </munit:validation>
+    </munit:test>
 
-    <!--<munit:test name="test-get-flight-for-EZE-flow" description="">-->
-        <!--<munit:enable-flow-sources>-->
-            <!--<munit:enable-flow-source value="api-main"/>-->
-        <!--</munit:enable-flow-sources>-->
-        <!--<munit:execution>-->
-            <!--<module-using-wsc:get-flight config-ref="scWSC" aDestination="EZE"/>-->
-        <!--</munit:execution>-->
-        <!--<munit:validation>-->
-            <!--<munitext:assert-that expression="#[output application/java -&#45;&#45; payload.findFlightResponse]" is="#[MunitTools::notNullValue()]" message="Oops this should have been true"/>-->
-            <!--<munitext:assert-that expression="#[output application/java -&#45;&#45; sizeOf(payload.findFlightResponse)]" is="#[MunitTools::equalTo(1)]" message="Oops this should have been true"/>-->
-            <!--&lt;!&ndash;asserting EZE response&ndash;&gt;-->
-            <!--<set-variable variableName="actual" value="#[output application/java -&#45;&#45; payload.findFlightResponse.return]"/>-->
-            <!--<flow-ref name="assert-eze"/>-->
-        <!--</munit:validation>-->
-    <!--</munit:test>-->
-
-    <!--<munit:test name="test-get-flight-for-non-existing-destination-flow" description="">-->
-        <!--<munit:enable-flow-sources>-->
-            <!--<munit:enable-flow-source value="api-main"/>-->
-        <!--</munit:enable-flow-sources>-->
-        <!--<munit:execution>-->
-            <!--<module-using-wsc:get-flight config-ref="scWSC" aDestination="THIS_ONE_WILL_FAIL"/>-->
-        <!--</munit:execution>-->
-        <!--<munit:validation>-->
-            <!--<munitext:assert-that expression="#[output application/java -&#45;&#45; payload.Fault]" is="#[MunitTools::notNullValue()]" message="Oops this should have been true"/>-->
-            <!--<munitext:assert-that expression="#[output application/java -&#45;&#45; payload.Fault.faultcode ]" is="#[MunitTools::equalTo('NON_EXISTING_DESTINATION:Server')]"/>-->
-            <!--<munitext:assert-that expression="#[output application/java -&#45;&#45; payload.Fault.faultstring ]" is="#[MunitTools::equalTo('Destination [THIS_ONE_WILL_FAIL] does not exist')]"/>-->
-
-        <!--</munit:validation>-->
-    <!--</munit:test>-->
-
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
-    <!-- UNTIL https://www.mulesoft.org/jira/browse/MULE-14996 is done, WSC won't work in SC -->
+    <munit:test name="test-get-flight-for-non-existing-destination-flow" description="">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="api-main"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <module-using-wsc:get-flight config-ref="scWSC" aDestination="THIS_ONE_WILL_FAIL"/>
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- payload.Fault]" is="#[MunitTools::notNullValue()]" message="Oops this should have been true"/>
+            <munitext:assert-that expression="#[output application/java --- payload.Fault.faultcode ]" is="#[MunitTools::equalTo('NON_EXISTING_DESTINATION:Server')]"/>
+            <munitext:assert-that expression="#[output application/java --- payload.Fault.faultstring ]" is="#[MunitTools::equalTo('Destination [THIS_ONE_WILL_FAIL] does not exist')]"/>
+        </munit:validation>
+    </munit:test>
 
     <!-- helper flows to tests the hardcoded responses in apikit-->
 

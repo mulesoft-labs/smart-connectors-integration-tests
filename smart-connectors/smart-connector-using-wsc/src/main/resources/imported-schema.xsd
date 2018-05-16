@@ -1,0 +1,38 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified"
+           xmlns:tns="http://soap.training.mulesoft.com/"
+           targetNamespace="http://soap.training.mulesoft.com/" version="1.0">
+    <xs:element name="findFlight" type="tns:findFlight"/>
+    <xs:element name="findFlightResponse" type="tns:findFlightResponse"/>
+    <xs:element name="listAllFlights" type="tns:listAllFlights"/>
+    <xs:element name="listAllFlightsResponse" type="tns:listAllFlightsResponse"/>
+    <xs:complexType name="listAllFlights">
+        <xs:sequence/>
+    </xs:complexType>
+    <xs:complexType name="listAllFlightsResponse">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:flight"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="flight">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="airlineName" type="xs:string"/>
+            <xs:element minOccurs="0" name="code" type="xs:string"/>
+            <xs:element minOccurs="0" name="departureDate" type="xs:string"/>
+            <xs:element minOccurs="0" name="destination" type="xs:string"/>
+            <xs:element name="emptySeats" type="xs:int"/>
+            <xs:element minOccurs="0" name="origin" type="xs:string"/>
+            <xs:element minOccurs="0" name="planeType" type="xs:string"/>
+            <xs:element name="price" type="xs:double"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="findFlight">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="destination" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="findFlightResponse">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:flight"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

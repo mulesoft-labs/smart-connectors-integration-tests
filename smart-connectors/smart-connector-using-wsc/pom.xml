@@ -16,7 +16,7 @@
     <description>A Mule extension done with pure Mule DSL that depends on the WSC Connector (wsc:config, wsc:consume, etc. )</description>
 
     <properties>
-        <mule.module.wsc.version>1.1.1</mule.module.wsc.version>
+        <mule.module.wsc.version>1.1.2-SNAPSHOT</mule.module.wsc.version>
         <mule.http.connector.test.version>1.2.0</mule.http.connector.test.version>
         <mule.soapkit.module.test.version>1.1.2</mule.soapkit.module.test.version>
     </properties>
