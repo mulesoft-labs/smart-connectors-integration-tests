@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module name="module-using-dw"
+        category="SELECT"
         doc:description="This module relies entirely in runtime provided components (no other Plugin dependencies) and DW"
 
         xmlns="http://www.mulesoft.org/schema/mule/module"
@@ -38,7 +39,7 @@
                     output application/json encoding='UTF-8'
                     ---
                     {
-                        'number' : dw::modules::weirdFolder::dwModule::five()
+                        'number' : module_using_dw::weirdFolder::dwModule::five()
                     }
                     ]]></ee:set-payload>
                 </ee:message>
@@ -58,7 +59,7 @@
                     %dw 2.0
                     output application/json encoding='UTF-8'
                     ---
-                        dw::modules::weirdFolder::dwModule::echo(vars.name)
+                        module_using_dw::weirdFolder::dwModule::echo(vars.name)
                     ]]></ee:set-payload>
                 </ee:message>
             </ee:transform>
@@ -77,7 +78,7 @@
                     %dw 2.0
                     output application/json encoding='UTF-8'
                     ---
-                        dw::modules::weirdFolder::dwModule::toUpper(vars.person)
+                        module_using_dw::weirdFolder::dwModule::toUpper(vars.person)
                     ]]></ee:set-payload>
                 </ee:message>
             </ee:transform>
@@ -96,7 +97,7 @@
                     %dw 2.0
                     output application/json encoding='UTF-8'
                     ---
-                        dw::modules::weirdFolder::dwModule::toUpper(vars.persons)
+                        module_using_dw::weirdFolder::dwModule::toUpper(vars.persons)
                     ]]></ee:set-payload>
                 </ee:message>
             </ee:transform>

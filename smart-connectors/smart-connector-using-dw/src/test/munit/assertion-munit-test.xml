@@ -103,6 +103,6 @@
     <flow name="set-payload-invoking-directly-dw-fun-flow">
         <!-- showing that the application also has access to the DW functions located in the dw/modules/weirdFolder/dwModule.dwl
         file defined in the module's code-->
-        <set-payload value="#[dw::modules::weirdFolder::dwModule::five()]"/>
+        <set-payload value="#[module_using_dw::weirdFolder::dwModule::five()]"/>
     </flow>
 </mule>
