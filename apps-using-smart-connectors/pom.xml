@@ -32,6 +32,7 @@
         <module>app-sc-using-dw</module>
         <module>app-sc-using-http</module>
         <module>app-sc-using-wsc</module>
+        <module>app-sc-exporting-resources</module>
     </modules>
     
     <build>

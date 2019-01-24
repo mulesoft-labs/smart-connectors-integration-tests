@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-exporting-resources"
+        doc:description="This module relies entirely in runtime provided components (no other Plugin dependencies) and exports resources"
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd">
+
+    <!--To make this module 4.1.1 compliant, we will add a property with no further use.
+    From 4.1.3 this is not necessary =] -->
+    <property name="__hiden_property_backward_compatible_do_not_use" type="string" defaultValue="do not use" />
+
+ </module>

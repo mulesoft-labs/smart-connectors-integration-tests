@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+	<flow name="set-payload-invoking-directly-dw-fun-flow">
+        <!-- showing that the application also has access to the DW functions located in the dw/modules/weirdFolder/dwModule.dwl
+        file defined in the module's code-->
+        <set-payload value="#[module_exporting_resources::weirdFolder::myMappings::five()]"/>
+    </flow>
+</mule>
