@@ -35,6 +35,7 @@
         <module>smart-connector-using-http</module>
         <module>smart-connector-using-java</module>
         <module>smart-connector-using-smart-connector</module>
+        <module>smart-connector-using-spring</module>
         <module>smart-connector-using-validation</module>
         <module>smart-connector-using-wsc</module>
         <module>smart-connector-exporting-resources</module>

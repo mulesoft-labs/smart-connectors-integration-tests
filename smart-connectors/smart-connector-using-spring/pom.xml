@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.mule.extensions.smart</groupId>
+        <artifactId>smart-connectors-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <version>1.0.0-SNAPSHOT</version>
+
+    <artifactId>smart-connector-using-spring</artifactId>
+    <packaging>mule-extension</packaging>
+
+    <name>Smart Connector: using spring Module</name>
+    <description>A Mule extension done with pure Mule DSL that depends on the Spring Module (spring:config, etc. )</description>
+
+    <properties>
+        <mule.module.spring.version>1.3.0</mule.module.spring.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-spring-module</artifactId>
+            <version>${mule.module.spring.version}</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+    </dependencies>
+</project>

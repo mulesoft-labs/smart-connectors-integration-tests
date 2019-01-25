@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-spring"
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+        xmlns:spring="http://www.mulesoft.org/schema/mule/spring"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+           http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd">
+
+    <!--
+    Notice the 'beans.xml' is within the folder module_using_spring, that's on purpose to make the plugin automatically
+    export everything it founds in the folder that has the same name as the coonnector, in this case
+    name="module-using-spring" ===> src/main/resources/module_using_spring
+    -->
+    <spring:config name="springConfig" files="module_using_spring/beans.xml"/>
+
+    <operation name="do-get-mybean">
+        <body>
+            <mule:set-payload value="#[app.registry.myList]"/>
+        </body>
+        <output type="string"/>
+    </operation>
+
+ </module>

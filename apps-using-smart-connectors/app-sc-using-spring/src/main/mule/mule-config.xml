@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+	  xmlns:module-using-spring="http://www.mulesoft.org/schema/mule/module-using-spring"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/module-using-spring http://www.mulesoft.org/schema/mule/module-using-spring/current/mule-module-using-spring.xsd">
+
+    <flow name="do-get-mybean-flow">
+        <module-using-spring:do-get-mybean />
+	</flow>
+
+    <flow name="do-get-mybean-directly-flow">
+        <set-payload value="#[app.registry.myList]"/>
+	</flow>
+
+</mule>
