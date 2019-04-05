@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:module-parameterizing-config="http://www.mulesoft.org/schema/mule/module-parameterizing-config"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munitext="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/module-parameterizing-config http://www.mulesoft.org/schema/mule/module-parameterizing-config/current/mule-module-parameterizing-config.xsd
+		http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/core      http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/munit     http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+        http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+
+    <munit:config name="assertion-test.xml"/>
+
+    <munit:test name="test-do-get-flow" description="">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="listenerFlow"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <mule:set-payload value="payload before going through HTTP smart connector"/>
+            <flow-ref name="do-get-flow" />
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- write(payload, 'text/plain') as String ]"
+                                  is="#[MunitTools::equalTo('Wubba lubba dub dub')]" message="Oops this should have been true"/>
+        </munit:validation>
+    </munit:test>
+
+    <http:listener-config name="http-listener">
+        <http:listener-connection host="localhost" port="${a.dynamic.port}"/>
+    </http:listener-config>
+
+    <http:request-config name="an-httpreq-config" basePath="/">
+        <http:request-connection host="localhost" port="${a.dynamic.port}" protocol="HTTP"/>
+    </http:request-config>
+
+    <module-parameterizing-config:config name="httpModule" configReference="an-httpreq-config"/>
+
+    <flow name="do-get-flow">
+        <module-parameterizing-config:do-get config-ref="httpModule" path="/thePath"/>
+    </flow>
+
+    <flow name="listenerFlow">
+        <http:listener path="thePath" config-ref="http-listener"/>
+        <set-payload value="Wubba lubba dub dub"/>
+    </flow>
+
+</mule>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munitext="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core      http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/munit     http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+        http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+
+    <munit:config name="assertion-test.xml"/>
+
+    <munit:test name="test-do-get-flow" description="">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="listenerFlow"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <mule:set-payload value="payload before going through HTTP smart connector"/>
+            <flow-ref name="do-get-flow" />
+        </munit:execution>
+        <munit:validation>
+            <munitext:assert-that expression="#[output application/java --- write(payload, 'text/plain') as String ]"
+                                  is="#[MunitTools::equalTo('Wubba lubba dub dub')]" message="Oops this should have been true"/>
+        </munit:validation>
+    </munit:test>
+
+
+</mule>

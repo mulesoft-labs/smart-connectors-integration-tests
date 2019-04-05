@@ -34,6 +34,7 @@
         <module>app-sc-using-wsc</module>
         <module>app-sc-exporting-resources</module>
         <module>app-sc-using-spring</module>
+        <module>app-sc-parameterizing-config</module>
     </modules>
     
     <build>

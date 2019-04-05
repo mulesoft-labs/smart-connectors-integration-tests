@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%-5p %d [%t] %c: %m%n"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <!-- Mule classes -->
+        <!--<AsyncLogger name="org.mule" level="DEBUG"/>-->
+        <!--<AsyncLogger name="com.mulesoft" level="DEBUG"/>-->
+
+        <AsyncLogger name="org.mule.runtime.module.http.HttpMessageLogger" level="DEBUG"/>
+        <AsyncLogger name="org.mule.runtime.module.http.internal.HttpMessageLogger" level="DEBUG"/>
+
+
+        <AsyncRoot level="INFO">
+            <AppenderRef ref="Console"/>
+        </AsyncRoot>
+    </Loggers>
+
+</Configuration>
