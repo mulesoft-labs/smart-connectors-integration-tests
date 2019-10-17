@@ -14,7 +14,7 @@
 
     <operation name="set-payload-hardcoded" doc:description="Sets the payload to the String value 'Wubba Lubba Dub Dub'">
         <body>
-            <mule:set-payload value="Wubba Lubba Dub Dub"/>
+            <tns:private-set-payload-hardcoded/>
         </body>
         <output type="string" doc:description="Payload's output"/>
     </operation>
@@ -61,5 +61,12 @@
         <errors>
             <error type="XML_SDK_CUSTOM_ERROR_REMAPPED"/>
         </errors>
+    </operation>
+
+    <operation name="private-set-payload-hardcoded" visibility="PRIVATE">
+        <body>
+            <mule:set-payload value="Wubba Lubba Dub Dub"/>
+        </body>
+        <output type="string"/>
     </operation>
  </module>

@@ -15,4 +15,16 @@
     <name>Smart Connector: using core components</name>
     <description>A Mule extension done with pure Mule DSL that depends JUST in the runtime MPs (set-payload, set-variable, etc.)</description>
 
+    <properties>
+        <mule.version>4.2.0</mule.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-extensions-xml-support</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>
